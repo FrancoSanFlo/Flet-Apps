@@ -16,7 +16,7 @@ def _view_():
                     Container(
                         width=450, 
                         height=450, 
-                        bgcolor="blue800",
+                        bgcolor="yellow800",
                         alignment=alignment.center,
                         content=Text('Contact Page'),
                     ),
