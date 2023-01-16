@@ -38,7 +38,7 @@ class Database:
     def InsertDatabase(db, values):
         c = db.cursor()
         # also make sure to use ? for the inputs for security purposes
-        c.execute("""INSERT INTO tasks (Task, Date) VALUES (?,?)""", values)
+        c.execute("INSERT INTO tasks (Task, Date) VALUES (?,?)", values)
         db.commit()
 
     def DeleteDatabase(db, value):
@@ -47,12 +47,12 @@ class Database:
         # same and as a result we are deleting based on task
         # an ideal app would not do this but instead delete based on the actual inmutable
         # database ID. but for the sake of the tutorial and length, we will do it this way...
-        c.execute("""DELETE FROM tasks WHERE Task=?""", value)
+        c.execute("DELETE FROM tasks WHERE Task=?", value)
         db.commit()
 
     def UpdateDatabase(db, value):
         c = db.cursor()
-        c.execute("""UPDATE tasks SET Task=? WHERE Task=?""", value)
+        c.execute("UPDATE tasks SET Task=? WHERE Task=?", value)
         db.commit()
 
 # now that we have all CRUD functions, we can start using with the app
@@ -232,7 +232,7 @@ def main(page: Page):
     def DeleteFunction(e):
         # delete of task within the DB
         db = Database.ConnectToDatabse()
-        Database.DeleteDatabase(db, (e.controls[0].content.controls[0].controls[0].value))
+        Database.DeleteDatabase(db, (e.controls[0].content.controls[0].controls[0].value,))
         # the e.control... is the value from the instance itself
         # we passed it as (value) because it need to be a tuple data type
         db.close()
@@ -241,7 +241,7 @@ def main(page: Page):
         # we can simply remove them we want to
         # the instance is passed on as e
         _main_column_.controls.remove(e)  # e is the instance iteself
-        _main_column_.controls.update()
+        _main_column_.update()
 
     def UpdateFunction(e):
         # we want to update from the form, so we need to pass whatever the user
@@ -272,10 +272,9 @@ def main(page: Page):
                 form.content.controls[0].value,
                 # second, we insert the data to check against (the value that
                 # this query should look for)
-                e.controls[0].content.controls[0].controls[0].value
-            )
+                e.controls[0].content.controls[0].controls[0].value,
+            ),
         )
-        db.close()
 
         # we can simply reverse the values from above...
         e.controls[0].content.controls[0].controls[0].value = form.content.controls[0].value
