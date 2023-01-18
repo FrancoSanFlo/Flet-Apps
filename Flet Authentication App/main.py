@@ -11,12 +11,12 @@ from functools import partial
 # Config File 
 # Your web app's Firebase configuration
 config  = {
-    "apiKey": "AIzaSyBZhdPg5sqr-LBcJ-fz2yIyYtJNfvAClxI",
-    "authDomain": "flet-fbase.firebaseapp.com",
-    "projectId": "flet-fbase",
-    "storageBucket": "flet-fbase.appspot.com",
-    "messagingSenderId": "459421754908",
-    "appId": "1:459421754908:web:a146523924bfbfbaaa21d9",
+    "apiKey": "",
+    "authDomain": "",
+    "projectId": "",
+    "storageBucket": "",
+    "messagingSenderId": "",
+    "appId": "",
     # set database to None
     "databaseURL" : "",
 }
