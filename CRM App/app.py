@@ -53,7 +53,6 @@ class Database:
         record = c.fetchone()
         return record
 
-
 class CrmApp(UserControl):
     def __init__(self):
         super().__init__()
@@ -119,7 +118,8 @@ class CrmApp(UserControl):
                             style=ButtonStyle(
                                 bgcolor={"": '#6d7280'},
                                 shape={
-                                    "": CountinuosRectangleBorder(radius=10)}
+                                    "": CountinuosRectangleBorder(radius=10)
+                                }
                             ),
                         ),
                         IconButton(
@@ -133,7 +133,25 @@ class CrmApp(UserControl):
                     height=10,
                     color="white24"
                 ),
-                self.drop_rut
+                Row(
+                    alignment=MainAxisAlignment.SPACE_EVENLY,
+                    vertical_alignment=CrossAxisAlignment.CENTER,
+                    controls=[
+                        self.drop_rut,
+                        IconButton(
+                            content=Text("Eliminar"),
+                            width=250,
+                            icon_color='black',
+                            on_click=lambda e: self.delete_client(e),
+                            style=ButtonStyle(
+                                bgcolor={"": '#6d7280'},
+                                shape={
+                                    "": CountinuosRectangleBorder(radius=10)
+                                }
+                            )
+                        )
+                    ]
+                )
             ],
         )
 
@@ -171,7 +189,29 @@ class CrmApp(UserControl):
         self.company.value = ""
 
         self.update()
+    
+    def find_option(self, option_rut):
+        for option in self.drop_rut.options:
+            if option_rut == option.key:
+                return option
+        return None
 
+    def delete_client(self, e):
+        db = Database.ConnectToDatabse()
+        option = self.find_option(self.drop_rut.value)
+        Database.DeleteDatabase(db, [self.drop_rut.value])
+        if option != None:
+            self.drop_rut.options.remove(option)
+            self.update()
+        db.close()
+
+        self.name.value = ""
+        self.last_name.value = ""
+        self.rut.value = ""
+        self.company.value = ""
+
+        self.update()
+        
 
 def main(page: Page):
     page.title = "CRM App By Franco Sánchez"
