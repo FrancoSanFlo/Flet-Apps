@@ -13,3 +13,5 @@ Flet Authentication App -> Line Indent (YouTube)
 Flet To-Do App -> Line Indent (YouTube)
 
 Flet CRM App -> Franco Sánchez
+
+Flet Data Table App -> Line Indent (YouTube)
