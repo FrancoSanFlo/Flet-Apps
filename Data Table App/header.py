@@ -99,7 +99,6 @@ class AppHeader(UserControl):
                             data.update()
                 # so the basic search works, except it doesn't take in upper case letters
 
-
     def build(self):
         self.app_header_instance()
 
