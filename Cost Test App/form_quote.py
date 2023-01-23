@@ -57,9 +57,11 @@ class AppFormQuote(UserControl):
                     ),
                     Dropdown(
                         height=20,
-                        text_size=13,
+                        text_size=10,
                         content_padding=0,
+                        text_style=TextStyle(weight="bold"),
                         color='black',
+                        alignment=Alignment(0, 0),
                         options=[
                             dropdown.Option("ENVIADA"),
                             dropdown.Option("NO ENVIADA"),
@@ -87,9 +89,11 @@ class AppFormQuote(UserControl):
                     ),
                     Dropdown(
                         height=20,
-                        text_size=13,
+                        text_size=10,
                         content_padding=0,
                         color='black',
+                        text_style=TextStyle(weight="bold"),
+                        alignment=Alignment(0, 0),
                         options=[
                             dropdown.Option("SI"),
                             dropdown.Option("NO"),
