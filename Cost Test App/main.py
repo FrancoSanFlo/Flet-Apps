@@ -17,12 +17,6 @@ from header import AppHeader
 from form_quote import AppFormQuote
 
 
-class QuoteApp(UserControl):
-    def __init__(self):
-        super().__init__()
-
-    
-
 def main(page: Page):
     page.title = "Cost Test App"
     page.bgcolor = "#FDFDFD"

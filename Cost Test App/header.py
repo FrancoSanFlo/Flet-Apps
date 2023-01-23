@@ -3,10 +3,17 @@
 # modules
 from flet import *
 import flet
+from controls import add_to_control_reference, return_control_reference
+
+control_map = return_control_reference()
+
 
 class AppHeader(UserControl):
     def __init__(self):
         super().__init__()
+
+    def app_header_instance(self):
+        add_to_control_reference("AppHeader", self)
 
     def app_header_brand(self):
         return Container(
@@ -22,6 +29,8 @@ class AppHeader(UserControl):
         )
 
     def build(self):
+        self.app_header_instance()
+
         return Container(
             expand=True,
             height=70,
