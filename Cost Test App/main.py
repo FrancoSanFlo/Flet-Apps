@@ -10,15 +10,19 @@
 # modules
 from flet import *
 import flet
-from datetime import datetime
 
 # app/modules
 from header import AppHeader
 from form_quote import AppFormQuote
+from database import Database
+    
+
+db = Database.ConnectToDatabse()
+db.close()
 
 
 def main(page: Page):
-    page.title = "Cost Test App"
+    page.title = "PERIC LTDA APP"
     page.bgcolor = "#FDFDFD"
     page.padding = 10
     page.add(

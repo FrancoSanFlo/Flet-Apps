@@ -18,8 +18,10 @@ class AppHeader(UserControl):
     def app_header_brand(self):
         return Container(
             content=Text(
-                "Cost Test App",
-                size=15
+                "PERIC LTDA",
+                size=15,
+                weight="bold",
+                italic=True
             )
         )
 

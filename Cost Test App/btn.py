@@ -3,26 +3,10 @@
 # modules
 from flet import *
 from controls import return_control_reference
-import sqlite3
+from database import Database
 # from form_helper import FormHelper
 
 control_map = return_control_reference()
-
-
-class Database:
-    def ConnectToDatabse():
-        try:
-            db = sqlite3.connect('cotizaciones.db')
-            c = db.cursor()
-            c.execute("""CREATE TABLE if not exists cotizaciones (id INTEGER PRIMARY KEY,
-            Cliente VARCHAR(255) NOT NULL, Rut VARCHAR(255) NOT NULL, Solicitud VARCHAR(255) NOT NULL, Descripcion VARCHAR(255),
-            Fecha_creacion VARCHAR(255) NOT NULL, Neto VARCHAR(255) NOT NULL, Iva VARCHAR(255) NOT NULL, Estado BIT NOT NULL,
-            Ganada BIT NOT NULL, Entregada BIT NOT NULL, Facturada BIT NOT NULL, Pagado BIT NOT NULL,
-            Folio VARCHAR(255) NOT NULL, Fecha_factura VARCHAR(255) NOT NULL, Factoring VARCHAR(255))""")
-            return db
-        except Exception as e:
-            print(e)
-
 
 class Cotizacion:
     def __init__(self, 
@@ -39,7 +23,9 @@ class Cotizacion:
         ganada: int,
         entregado: int,
         facturado: int,
-        pagado: int
+        pagado: int,
+        neto,
+        iva
     ):
         self.n_cotizacion = n_cotizacion
         self.rut = rut
@@ -55,7 +41,48 @@ class Cotizacion:
         self.entregado = entregado
         self.facturado = facturado
         self.pagado = pagado
+        self.neto = neto
+        self.iva = iva
 
+
+def return_cotizacion(data_quote):
+    n_cotizacion = data_quote[0]
+    rut = data_quote[1]
+    cliente = data_quote[2]
+    solicitado_por = data_quote[3]
+    fecha_solicitud = data_quote[4]
+    folio = data_quote[5]
+    factoring = data_quote[6]
+    fecha_factura = data_quote[7]
+    descripcion = data_quote[8]
+    estado = data_quote[9]
+    ganada = data_quote[10]
+    entregado = data_quote[11]
+    facturado = data_quote[12]
+    pagado = data_quote[13]
+    neto = data_quote[14]
+    iva = data_quote[15]
+    
+    cotizacion = Cotizacion(
+        n_cotizacion,
+        rut,
+        cliente,
+        solicitado_por,
+        fecha_solicitud,
+        folio,
+        factoring,
+        fecha_factura,
+        descripcion,
+        estado,
+        ganada,
+        entregado,
+        facturado,
+        pagado,
+        neto,
+        iva
+    )
+
+    return cotizacion
 
 def get_input_data(e):
     data_cotizacion = []
@@ -63,27 +90,52 @@ def get_input_data(e):
     for key, value in control_map.items():
         if key == 'AppFormQuote':
             for user_input in value.controls[0].content.controls[0].controls[:]:
-                # print(user_input.content.controls[1].value)
                 data_cotizacion.append(user_input.content.controls[1].value)
 
             for user_input in value.controls[0].content.controls[1].controls[:]:
-                # print(user_input.content.controls[1].value)
                 data_cotizacion.append(user_input.content.controls[1].value)
 
             for user_input in value.controls[0].content.controls[2].controls[:]:
-                # print(user_input.content.controls[1].value)
                 data_cotizacion.append(user_input.content.controls[1].value)
 
             for user_input in value.controls[0].content.controls[3].controls[:]:
-                # print(user_input.content.controls[1].value)
                 if user_input.content.controls[1].value == 'SI' or  user_input.content.controls[1].value == 'ENVIADA':
                     data_cotizacion.append(1)
                 elif user_input.content.controls[1].value == 'NO' or  user_input.content.controls[1].value == 'NO ENVIADA':
                     data_cotizacion.append(0)
                 else:
                     data_cotizacion.append(user_input.content.controls[1].value)
+            
+            for user_input in value.controls[0].content.controls[4].controls[:]:
+                data_cotizacion.append(str(user_input.content.controls[1].value))
 
+    ctz = return_cotizacion(data_cotizacion)
 
+    # Calling to the DB Class
+    db = Database.ConnectToDatabse()
+    Database.InsertDatabase(
+        db, 
+        (
+            ctz.n_cotizacion, 
+            ctz.cliente, 
+            ctz.rut, 
+            ctz.solicitado_por,
+            ctz.descripcion,
+            ctz.fecha_solicitud,
+            int(ctz.neto),
+            int(ctz.iva),
+            ctz.estado,
+            ctz.ganada,
+            ctz.entregado,
+            ctz.facturado,
+            ctz.pagado,
+            ctz.folio,
+            ctz.fecha_factura,
+            ctz.factoring
+        )
+    )
+    db.close()
+    
 
 def return_form_button():
     return Container(
