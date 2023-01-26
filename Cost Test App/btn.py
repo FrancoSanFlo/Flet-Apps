@@ -4,6 +4,7 @@
 from flet import *
 from controls import return_control_reference
 from database import Database
+from openpyxl import *
 # from form_helper import FormHelper
 
 control_map = return_control_reference()
@@ -82,10 +83,41 @@ def return_cotizacion(data_quote):
         iva
     )
 
-    return cotizacion
+    new_estado = ''
+    if cotizacion.estado == 1:
+        new_estado = 'ENVIADA'
+    else:
+        new_estado = 'NO ENVIADA'
+
+    ordered_data_quote = [
+        cotizacion.n_cotizacion,
+        cotizacion.cliente,
+        cotizacion.rut,
+        cotizacion.solicitado_por,
+        cotizacion.descripcion,
+        cotizacion.fecha_solicitud,
+        cotizacion.neto,
+        cotizacion.iva,
+        new_estado,
+        cotizacion.ganada,
+        cotizacion.entregado,
+        cotizacion.facturado,
+        cotizacion.pagado,
+        cotizacion.folio,
+        cotizacion.fecha_factura,
+        cotizacion.factoring
+    ]
+
+    return cotizacion, ordered_data_quote
 
 def get_input_data(e):
     data_cotizacion = []
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    ws = wb.active
+    # min_row = ws.min_row
+    max_row = int(ws.max_row) + 1
+    min_column = ws.min_column
+    # max_column = ws.max_column
 
     for key, value in control_map.items():
         if key == 'AppFormQuote':
@@ -109,7 +141,7 @@ def get_input_data(e):
             for user_input in value.controls[0].content.controls[4].controls[:]:
                 data_cotizacion.append(str(user_input.content.controls[1].value))
 
-    ctz = return_cotizacion(data_cotizacion)
+    ctz, ordered_data_quote = return_cotizacion(data_cotizacion)
 
     # Calling to the DB Class
     db = Database.ConnectToDatabse()
@@ -135,7 +167,21 @@ def get_input_data(e):
         )
     )
     db.close()
-    
+
+    for i in ordered_data_quote:
+        if i == 1:
+            ws.cell(max_row,min_column).value = 'SI'
+        elif i == 0:
+            ws.cell(max_row,min_column).value = 'NO'
+        else:
+            ws.cell(max_row,min_column).value = i
+            
+        min_column += 1
+
+
+    min_column = ws.min_column
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.close()
 
 def return_form_button():
     return Container(

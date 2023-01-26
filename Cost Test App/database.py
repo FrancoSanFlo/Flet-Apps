@@ -27,23 +27,23 @@ class Database:
         print("QUOTE INSERTED INTO THE DATABASE")
 
     #TODO: ARREGLAR LAS FUNCIONES PARA LA BASE DE DATOS DE DPERIC LTDA
-    def ReadDatabase(db):
-        c = db.cursor()
-        # make sure to name the columns and not SELECT * FROM...
-        c.execute("""SELECT Task, Date FROM tasks""")
-        records = c.fetchall()
-        return records
+    # def ReadDatabase(db):
+    #     c = db.cursor()
+    #     # make sure to name the columns and not SELECT * FROM...
+    #     c.execute("""SELECT Task, Date FROM tasks""")
+    #     records = c.fetchall()
+    #     return records
 
-    def DeleteDatabase(db, value):
-        c = db.cursor()
-        # quick note: here we're assuming that no two task description are the
-        # same and as a result we are deleting based on task
-        # an ideal app would not do this but instead delete based on the actual inmutable
-        # database ID. but for the sake of the tutorial and length, we will do it this way...
-        c.execute("DELETE FROM tasks WHERE Task=?", value)
-        db.commit()
+    # def DeleteDatabase(db, value):
+    #     c = db.cursor()
+    #     # quick note: here we're assuming that no two task description are the
+    #     # same and as a result we are deleting based on task
+    #     # an ideal app would not do this but instead delete based on the actual inmutable
+    #     # database ID. but for the sake of the tutorial and length, we will do it this way...
+    #     c.execute("DELETE FROM tasks WHERE Task=?", value)
+    #     db.commit()
 
-    def UpdateDatabase(db, value):
-        c = db.cursor()
-        c.execute("UPDATE tasks SET Task=? WHERE Task=?", value)
-        db.commit()
+    # def UpdateDatabase(db, value):
+        # c = db.cursor()
+        # c.execute("UPDATE tasks SET Task=? WHERE Task=?", value)
+        # db.commit()
