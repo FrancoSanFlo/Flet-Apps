@@ -112,12 +112,18 @@ def return_cotizacion(data_quote):
 
 def get_input_data(e):
     data_cotizacion = []
-    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+
+    # FOR DESKTOP
+    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+
+    # FOR NOTEBOOK
+    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    
     ws = wb.active
-    # min_row = ws.min_row
     max_row = int(ws.max_row) + 1
     min_column = ws.min_column
-    # max_column = ws.max_column
+
+    
 
     for key, value in control_map.items():
         if key == 'AppFormQuote':
@@ -180,7 +186,10 @@ def get_input_data(e):
 
 
     min_column = ws.min_column
-    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    # FOR DESKTOP
+    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    # FOR NOTEBOOK
+    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
 def return_form_button():
