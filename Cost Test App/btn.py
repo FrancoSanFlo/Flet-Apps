@@ -5,7 +5,7 @@ from flet import *
 from controls import return_control_reference
 from database import Database
 from openpyxl import *
-# from form_helper import FormHelper
+from form_helper import return_date, return_new_quote
 
 control_map = return_control_reference()
 
@@ -110,21 +110,73 @@ def return_cotizacion(data_quote):
 
     return cotizacion, ordered_data_quote
 
-def get_input_data(e):
-    data_cotizacion = []
+def save_into_excel(ordered_data_quote):
 
     # FOR DESKTOP
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
     
     ws = wb.active
     max_row = int(ws.max_row) + 1
     min_column = ws.min_column
 
-    
+    for i in ordered_data_quote:
+        if i == 1:
+            ws.cell(max_row,min_column).value = 'SI'
+        elif i == 0:
+            ws.cell(max_row,min_column).value = 'NO'
+        else:
+            ws.cell(max_row,min_column).value = i
+            
+        min_column += 1
 
+
+    min_column = ws.min_column
+    # FOR DESKTOP
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    # # FOR NOTEBOOK
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    wb.close()
+
+def clean_data_fields():
+    for key, value in control_map.items():
+        if key == 'AppFormQuote':
+            for user_input in value.controls[0].content.controls[0].controls[:]:
+                if user_input.content.controls[0].value == 'Número Cotización':
+                    user_input.content.controls[1].value = return_new_quote()
+                    user_input.content.controls[1].update()
+                elif user_input.content.controls[0].value == 'Fecha solicitud':
+                    user_input.content.controls[1].value = return_date()
+                    user_input.content.controls[1].update()
+                else:
+                    user_input.content.controls[1].value = ''
+                    user_input.content.controls[1].update()
+
+            for user_input in value.controls[0].content.controls[1].controls[:]:
+                user_input.content.controls[1].value = ''
+                user_input.content.controls[1].update()
+
+            for user_input in value.controls[0].content.controls[2].controls[:]:
+                user_input.content.controls[1].value = ''
+                user_input.content.controls[1].update()
+
+            for user_input in value.controls[0].content.controls[3].controls[:]:
+                user_input.content.controls[1].value = ''
+                user_input.content.controls[1].update()
+            
+            for user_input in value.controls[0].content.controls[4].controls[:]:
+                if  user_input.content.controls[0].value == 'Neto':
+                    user_input.content.controls[1].value = ''
+                    user_input.content.controls[1].update()
+                else:
+                    user_input.content.controls[1].value = ''
+                    user_input.content.controls[1].update()
+
+def get_input_data(e):
+    data_cotizacion = []
+    
     for key, value in control_map.items():
         if key == 'AppFormQuote':
             for user_input in value.controls[0].content.controls[0].controls[:]:
@@ -174,23 +226,8 @@ def get_input_data(e):
     )
     db.close()
 
-    for i in ordered_data_quote:
-        if i == 1:
-            ws.cell(max_row,min_column).value = 'SI'
-        elif i == 0:
-            ws.cell(max_row,min_column).value = 'NO'
-        else:
-            ws.cell(max_row,min_column).value = i
-            
-        min_column += 1
-
-
-    min_column = ws.min_column
-    # FOR DESKTOP
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
-    # FOR NOTEBOOK
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
-    wb.close()
+    save_into_excel(ordered_data_quote)
+    clean_data_fields()
 
 def return_form_button():
     return Container(

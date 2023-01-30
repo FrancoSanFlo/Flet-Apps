@@ -9,8 +9,9 @@ control_map = return_control_reference()
 
 
 class AppHeader(UserControl):
-    def __init__(self):
+    def __init__(self, page):
         super().__init__()
+        self.page = page
 
     def app_header_instance(self):
         add_to_control_reference("AppHeader", self)

@@ -11,10 +11,11 @@
 from flet import *
 import flet
 
-# app/modules
+# app-modules
 from header import AppHeader
 from form_quote import AppFormQuote
 from database import Database
+from views import views_handler
     
 
 db = Database.ConnectToDatabse()
@@ -25,16 +26,15 @@ def main(page: Page):
     page.title = "PERIC LTDA APP"
     page.bgcolor = "#FDFDFD"
     page.padding = 10
-    page.add(
-        Column(
-            expand=True,
-            controls=[
-                AppHeader(),
-                Divider(height=2, color="transparent"),
-                AppFormQuote()
-            ],
+    
+    def route_change(route):
+        page.views.clear()
+        page.views.append(
+            views_handler(page)[page.route]
         )
-    )
+
+    page.on_route_change = route_change
+    page.go('/cotizaciones')
     page.update()
 
 

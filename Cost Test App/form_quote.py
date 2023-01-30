@@ -5,26 +5,16 @@ import flet
 from flet import *
 from btn import return_form_button
 from controls import add_to_control_reference, return_control_reference
-from datetime import datetime
-from openpyxl import *
+
+# app-modules
+from form_helper import return_date, return_new_quote
 
 control_map = return_control_reference()
-date =  datetime.now().strftime("%d-%m-%Y")
-
-# FOR DESKTOP
-# wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
-
-# FOR NOTEBOOK
-wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
-
-ws = wb.active
-max_row = ws.max_row
-new_n_cot = int(ws.cell(max_row,1).value) + 1
-wb.close()
 
 class AppFormQuote(UserControl):
-    def __init__(self):
+    def __init__(self, page):
         super().__init__()
+        self.page = page
     
     def app_form_input_instance(self):
         add_to_control_reference("AppFormQuote", self)
@@ -125,7 +115,6 @@ class AppFormQuote(UserControl):
                 ],
             ),
         )
-        pass
 
     def app_form_input_field_price(self, name:str, expand:int, txt_state:bool): 
             return Container(
@@ -202,11 +191,11 @@ class AppFormQuote(UserControl):
                 controls=[
                     Row(
                         controls=[
-                            self.app_form_input_field("Número Cotización", 1, True, new_n_cot),
+                            self.app_form_input_field("Número Cotización", 1, True, return_new_quote()),
                             self.app_form_input_field("Rut", 1, False, None),
                             self.app_form_input_field("Cliente", 2, False, None),
                             self.app_form_input_field("Solicitado por", 2, False, None),
-                            self.app_form_input_field("Fecha solicitud", 1, True, date),
+                            self.app_form_input_field("Fecha solicitud", 1, True, return_date()),
                         ],
                     ),
                     Row(
