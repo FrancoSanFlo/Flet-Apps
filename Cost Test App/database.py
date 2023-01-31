@@ -4,7 +4,7 @@
 import sqlite3
 
 class Database:
-    def ConnectToDatabse():
+    def ConnectToDatabase():
         try:
             db = sqlite3.connect('cotizaciones.db')
             c = db.cursor()
@@ -27,12 +27,20 @@ class Database:
         print("QUOTE INSERTED INTO THE DATABASE")
 
     #TODO: ARREGLAR LAS FUNCIONES PARA LA BASE DE DATOS DE DPERIC LTDA
-    # def ReadDatabase(db):
-    #     c = db.cursor()
-    #     # make sure to name the columns and not SELECT * FROM...
-    #     c.execute("""SELECT Task, Date FROM tasks""")
-    #     records = c.fetchall()
-    #     return records
+    def ReadDatabase(db):
+        c = db.cursor()
+        # make sure to name the columns and not SELECT * FROM...
+        c.execute("""SELECT * FROM cotizaciones""")
+        records = c.fetchall()
+        return records
+
+    def LastRecord(db):
+        c = db.cursor()
+        c.execute("SELECT MAX(id) FROM cotizaciones")
+        id = c.fetchone()
+        c.execute("SELECT * FROM cotizaciones WHERE id=?", id)
+        record = c.fetchone()
+        return record
 
     # def DeleteDatabase(db, value):
     #     c = db.cursor()

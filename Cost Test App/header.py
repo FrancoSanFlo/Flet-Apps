@@ -9,9 +9,8 @@ control_map = return_control_reference()
 
 
 class AppHeader(UserControl):
-    def __init__(self, page):
+    def __init__(self):
         super().__init__()
-        self.page = page
 
     def app_header_instance(self):
         add_to_control_reference("AppHeader", self)
@@ -19,7 +18,7 @@ class AppHeader(UserControl):
     def app_header_brand(self):
         return Container(
             content=Text(
-                "PERIC LTDA",
+                "",
                 size=15,
                 weight="bold",
                 italic=True

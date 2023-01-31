@@ -7,14 +7,13 @@ from btn import return_form_button
 from controls import add_to_control_reference, return_control_reference
 
 # app-modules
-from form_helper import return_date, return_new_quote
+from form_helper import return_date, return_new_quote, ButtonNavigation
 
 control_map = return_control_reference()
 
 class AppFormQuote(UserControl):
-    def __init__(self, page):
+    def __init__(self):
         super().__init__()
-        self.page = page
     
     def app_form_input_instance(self):
         add_to_control_reference("AppFormQuote", self)
@@ -181,7 +180,7 @@ class AppFormQuote(UserControl):
 
         return Container(
             expand=True,
-            height=400,
+            height=360,
             bgcolor='white10',
             border=border.all(1, "#EBEBEB"),
             border_radius=8,
@@ -227,10 +226,21 @@ class AppFormQuote(UserControl):
                     ),
                     Divider(height=2, color="transparent"),
                     Row(
-                        alignment=MainAxisAlignment.END,
+                        alignment=MainAxisAlignment.SPACE_BETWEEN,
                         controls=[
-                            # We need to add a button here, but it's created in a separate file...
-                            return_form_button()
+                            Row(
+                                alignment=MainAxisAlignment.START,
+                                controls=[
+                                    ButtonNavigation(page, 'register', 'Volver atrás', icons.ARROW_BACK_ROUNDED, True, False),
+                                ]
+                            ),
+                            Row(
+                                alignment=MainAxisAlignment.END,
+                                controls=[
+                                # We need to add a button here, but it's created in a separate file...
+                                    return_form_button(),
+                                ],
+                            ),
                         ],
                     ),
                 ],

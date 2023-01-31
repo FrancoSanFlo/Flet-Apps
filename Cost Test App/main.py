@@ -18,7 +18,7 @@ from database import Database
 from views import views_handler
     
 
-db = Database.ConnectToDatabse()
+db = Database.ConnectToDatabase()
 db.close()
 
 
@@ -34,7 +34,7 @@ def main(page: Page):
         )
 
     page.on_route_change = route_change
-    page.go('/cotizaciones')
+    page.go('/register')
     page.update()
 
 

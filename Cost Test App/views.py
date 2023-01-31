@@ -7,26 +7,30 @@ import flet
 # app-modules
 from header import AppHeader
 from form_quote import AppFormQuote
+from form_register import AppRegisterForm
 
 
 def views_handler(page):
     return {
-        '/': View(
-            route='/',
+        '/register': View(
+            route='/register',
             bgcolor="#FDFDFD",
             padding = 10,
             controls=[
-                # Home(page)
+                AppHeader(),
+                Divider(height=2, color="transparent"),
+                AppRegisterForm(),
+                
             ],
         ),
-        '/cotizaciones': View(
-            route='/cotizaciones',
+        '/quote': View(
+            route='/quote',
             bgcolor="#FDFDFD",
             padding = 10,
             controls=[
-                AppHeader(page),
+                AppHeader(),
                 Divider(height=2, color="transparent"),
-                AppFormQuote(page),
+                AppFormQuote(),
             ],
         )
     }

@@ -5,7 +5,8 @@ def add_to_control_reference(key, value):
     global control_reference
     try:
         control_reference[key] = value
-        print(control_reference)
+        # TODO: BORRAR LINEA
+        # print(len(control_reference))
     except KeyError as e:
         print(e)
     finally:

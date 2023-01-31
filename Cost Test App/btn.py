@@ -82,35 +82,9 @@ def return_cotizacion(data_quote):
         neto,
         iva
     )
+    return cotizacion
 
-    new_estado = ''
-    if cotizacion.estado == 1:
-        new_estado = 'ENVIADA'
-    else:
-        new_estado = 'NO ENVIADA'
-
-    ordered_data_quote = [
-        cotizacion.n_cotizacion,
-        cotizacion.cliente,
-        cotizacion.rut,
-        cotizacion.solicitado_por,
-        cotizacion.descripcion,
-        cotizacion.fecha_solicitud,
-        cotizacion.neto,
-        cotizacion.iva,
-        new_estado,
-        cotizacion.ganada,
-        cotizacion.entregado,
-        cotizacion.facturado,
-        cotizacion.pagado,
-        cotizacion.folio,
-        cotizacion.fecha_factura,
-        cotizacion.factoring
-    ]
-
-    return cotizacion, ordered_data_quote
-
-def save_into_excel(ordered_data_quote):
+def save_into_excel():
 
     # FOR DESKTOP
     wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
@@ -122,18 +96,29 @@ def save_into_excel(ordered_data_quote):
     max_row = int(ws.max_row) + 1
     min_column = ws.min_column
 
-    for i in ordered_data_quote:
-        if i == 1:
-            ws.cell(max_row,min_column).value = 'SI'
-        elif i == 0:
-            ws.cell(max_row,min_column).value = 'NO'
+    db = Database.ConnectToDatabase()
+    record = Database.LastRecord(db)
+    record = list(record)
+    record.pop(0)
+
+    for i in range(len(record)):
+        if i == 8:
+            if record[i] == 1:
+                ws.cell(max_row,min_column).value = 'ENVIADA'
+            else:
+                ws.cell(max_row,min_column).value = 'NO ENVIADA'
         else:
-            ws.cell(max_row,min_column).value = i
+            if record[i] == 1:
+                ws.cell(max_row,min_column).value = 'SI'
+            elif record[i] == 0:
+                ws.cell(max_row,min_column).value = 'NO'
+            else:
+                ws.cell(max_row,min_column).value = record[i]
             
         min_column += 1
 
-
     min_column = ws.min_column
+
     # FOR DESKTOP
     wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
     # # FOR NOTEBOOK
@@ -199,10 +184,10 @@ def get_input_data(e):
             for user_input in value.controls[0].content.controls[4].controls[:]:
                 data_cotizacion.append(str(user_input.content.controls[1].value))
 
-    ctz, ordered_data_quote = return_cotizacion(data_cotizacion)
+    ctz = return_cotizacion(data_cotizacion)
 
     # Calling to the DB Class
-    db = Database.ConnectToDatabse()
+    db = Database.ConnectToDatabase()
     Database.InsertDatabase(
         db, 
         (
@@ -226,8 +211,11 @@ def get_input_data(e):
     )
     db.close()
 
-    save_into_excel(ordered_data_quote)
+    save_into_excel()
     clean_data_fields()
+
+# def go_home(e):
+    
 
 def return_form_button():
     return Container(
@@ -237,6 +225,7 @@ def return_form_button():
             bgcolor='#007C91',
             color="white",
             content=Row(
+                alignment=MainAxisAlignment.CENTER,
                 controls=[
                     Icon(
                         name=icons.ADD_ROUNDED,
@@ -258,6 +247,6 @@ def return_form_button():
                 },
             ),
             height=42,
-            width=220,
+            width=170,
         ),
     )
