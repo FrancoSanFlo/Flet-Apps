@@ -24,7 +24,7 @@ class AppRegisterForm(UserControl):
 
         return Container(
             expand=True,
-            height=400,
+            height=250,
             bgcolor='white10',
             border=border.all(1, "#EBEBEB"),
             border_radius=8,
@@ -34,17 +34,25 @@ class AppRegisterForm(UserControl):
                 controls=[
                     Row(
                         controls=[
-                            AppFormQuote.app_form_input_field(self, "Campo de prueba 1", 1, False, None),
-                            AppFormQuote.app_form_input_field(self, "Campo de prueba 2", 2, False, None),
-                            AppFormQuote.app_form_input_field(self, "Campo de prueba 3", 2, False, None),
+                            AppFormQuote.app_form_input_field(self, "Número Cotización", 1, True, return_new_quote()),
+                            AppFormQuote.app_form_input_field(self, "Rut", 1, False, None),
+                            AppFormQuote.app_form_input_field(self, "Empresa", 2, False, None),
+                            AppFormQuote.app_form_input_field(self, "Solicitado por", 2, False, None),
+                            AppFormQuote.app_form_input_field(self, "Fecha", 1, True, return_date()),
                         ]
                     ),
                     Row(
                         controls=[
-                            AppFormQuote.app_form_input_field(self, "Campo de prueba 4", 2, False, None),
-                            AppFormQuote.app_form_input_field(self, "Campo de prueba 5", 2, False, None),
-                            AppFormQuote.app_form_input_field(self, "Campo de prueba 6", 3, True, None),
-                            AppFormQuote.app_form_input_field(self, "Campo de prueba 7", 3, True, None),
+                            AppFormQuote.app_form_input_field(self, "Descripción", 2, False, None),
+                            AppFormQuote.app_form_input_field(self, "Gestor", 1, True, "DRAGO PERIC"),
+                        ]
+                    ),
+                    Row(
+                        controls=[
+                            AppFormQuote.app_form_input_field(self, "Categoría", 7, False, None),
+                            AppFormQuote.app_form_input_field(self, "Tipo Unidad", 1, False, None),
+                            AppFormQuote.app_form_input_field(self, "Cantidad", 1, False, None),
+                            AppFormQuote.app_form_input_field(self, "Valor unitario", 2, False, None),
                         ]
                     ),
                     Divider(height=2, color="transparent"),

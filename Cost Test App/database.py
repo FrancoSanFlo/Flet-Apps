@@ -30,7 +30,8 @@ class Database:
     def ReadDatabase(db):
         c = db.cursor()
         # make sure to name the columns and not SELECT * FROM...
-        c.execute("""SELECT * FROM cotizaciones""")
+        c.execute("""SELECT N_cotizacion, Cliente, Rut, Solicitud, Descripcion, Fecha_creacion, Neto, Iva,
+        Estado, Ganada, Entregada, Facturada, Pagado, Folio, Fecha_factura, Factoring FROM cotizaciones""")
         records = c.fetchall()
         return records
 
@@ -41,6 +42,15 @@ class Database:
         c.execute("SELECT * FROM cotizaciones WHERE id=?", id)
         record = c.fetchone()
         return record
+
+    def SearchByQuote(db, value):
+        c = db.cursor()
+        # make sure to name the columns and not SELECT * FROM...
+        c.execute("""SELECT N_cotizacion, Cliente, Rut, Solicitud, Descripcion, Fecha_creacion, Neto, Iva,
+        Estado, Ganada, Entregada, Facturada, Pagado, Folio, Fecha_factura, Factoring 
+        FROM cotizaciones WHERE N_cotizacion=?""", value)
+        records = c.fetchone()
+        return records    
 
     # def DeleteDatabase(db, value):
     #     c = db.cursor()

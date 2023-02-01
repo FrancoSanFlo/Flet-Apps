@@ -5,46 +5,9 @@ from flet import *
 from controls import return_control_reference
 from database import Database
 from openpyxl import *
-from form_helper import return_date, return_new_quote
+from form_helper import return_date, return_new_quote, Cotizacion
 
 control_map = return_control_reference()
-
-class Cotizacion:
-    def __init__(self, 
-        n_cotizacion, 
-        rut, 
-        cliente, 
-        solicitado_por,
-        fecha_solicitud,
-        folio,
-        factoring,
-        fecha_factura,
-        descripcion,
-        estado: int,
-        ganada: int,
-        entregado: int,
-        facturado: int,
-        pagado: int,
-        neto,
-        iva
-    ):
-        self.n_cotizacion = n_cotizacion
-        self.rut = rut
-        self.cliente = cliente
-        self.solicitado_por = solicitado_por
-        self.fecha_solicitud = fecha_solicitud
-        self.folio = folio
-        self.factoring = factoring
-        self.fecha_factura = fecha_factura
-        self.descripcion = descripcion
-        self.estado = estado
-        self.ganada = ganada
-        self.entregado = entregado
-        self.facturado = facturado
-        self.pagado = pagado
-        self.neto = neto
-        self.iva = iva
-
 
 def return_cotizacion(data_quote):
     n_cotizacion = data_quote[0]
@@ -214,8 +177,18 @@ def get_input_data(e):
     save_into_excel()
     clean_data_fields()
 
-# def go_home(e):
-    
+def fill_quotes(e):
+    db = Database.ConnectToDatabase()
+    for key, value in control_map.items():
+        if key == 'AppFormQuote':
+            for user_input in value.controls[0].content.controls[0].controls[:]:
+                if user_input.content.controls[0].value == 'Número Cotización':
+                    user_input.content.controls[1].options.clear()
+                    for quote in Database.ReadDatabase(db)[::-1]:
+                        user_input.content.controls[1].options.append(dropdown.Option(quote[0]))
+                    user_input.content.controls[1].update()
+            
+            value.controls[0].content.controls[6].controls[1].controls[1].content.visible = False
 
 def return_form_button():
     return Container(
@@ -233,6 +206,40 @@ def return_form_button():
                     ),
                     Text(
                         "Enviar cambios",
+                        size=12,
+                        weight="bold",
+                    ),
+                ],
+            ),
+            style=ButtonStyle(
+                shape={
+                    "": RoundedRectangleBorder(radius=6),
+                },
+                color={
+                    "": "white",
+                },
+            ),
+            height=42,
+            width=170,
+        ),
+    )
+
+def return_quotes_button():
+    return Container(
+        alignment=alignment.center,
+        content=ElevatedButton(
+            on_click=lambda e: fill_quotes(e),
+            bgcolor='#007C91',
+            color="white",
+            content=Row(
+                alignment=MainAxisAlignment.CENTER,
+                controls=[
+                    Icon(
+                        name=icons.REFRESH_ROUNDED,
+                        size=12
+                    ),
+                    Text(
+                        "Cargar cotizaciones",
                         size=12,
                         weight="bold",
                     ),

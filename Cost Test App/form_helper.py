@@ -5,6 +5,10 @@ from datetime import datetime
 from openpyxl import *
 from database import *
 from flet import *
+from controls import return_control_reference
+
+control_map = return_control_reference()
+
 
 def return_date():
     return datetime.now().strftime("%d-%m-%Y")
@@ -13,6 +17,43 @@ def return_new_quote():
     db = Database.ConnectToDatabase()
     new_quote = Database.LastRecord(db)
     return int(new_quote[1])+1
+
+
+class Cotizacion:
+    def __init__(self, 
+        n_cotizacion, 
+        rut, 
+        cliente, 
+        solicitado_por,
+        fecha_solicitud,
+        folio,
+        factoring,
+        fecha_factura,
+        descripcion,
+        estado: int,
+        ganada: int,
+        entregado: int,
+        facturado: int,
+        pagado: int,
+        neto,
+        iva
+    ):
+        self.n_cotizacion = n_cotizacion
+        self.rut = rut
+        self.cliente = cliente
+        self.solicitado_por = solicitado_por
+        self.fecha_solicitud = fecha_solicitud
+        self.folio = folio
+        self.factoring = factoring
+        self.fecha_factura = fecha_factura
+        self.descripcion = descripcion
+        self.estado = estado
+        self.ganada = ganada
+        self.entregado = entregado
+        self.facturado = facturado
+        self.pagado = pagado
+        self.neto = neto
+        self.iva = iva
 
 
 class ButtonNavigation(UserControl):
