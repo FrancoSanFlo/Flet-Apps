@@ -52,7 +52,8 @@ class AppRegisterForm(UserControl):
                             AppFormQuote.app_form_input_field(self, "Categoría", 7, False, None),
                             AppFormQuote.app_form_input_field(self, "Tipo Unidad", 1, False, None),
                             AppFormQuote.app_form_input_field(self, "Cantidad", 1, False, None),
-                            AppFormQuote.app_form_input_field(self, "Valor unitario", 2, False, None),
+                            AppFormQuote.app_form_input_field(self, "Valor unitario", 1, False, None),
+                            AppFormQuote.app_form_input_field(self, "Subtotal", 1, True, None),
                         ]
                     ),
                     Divider(height=2, color="transparent"),
