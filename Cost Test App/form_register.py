@@ -3,14 +3,14 @@
 # modules
 import flet 
 from flet import *
-from btn import return_form_button
+from btn import return_form_button, return_category_register_button, return_register_form_button
 from controls import add_to_control_reference, return_control_reference
 
 # app-modules
 from form_helper import return_date, return_new_quote, ButtonNavigation
 from form_quote import AppFormQuote
 
-ontrol_map = return_control_reference()
+control_map = return_control_reference()
 
 class AppRegisterForm(UserControl):
     def __init__(self):
@@ -18,6 +18,71 @@ class AppRegisterForm(UserControl):
     
     def app_form_input_instance(self):
         add_to_control_reference("AppRegisterForm", self)
+
+    # Duplicated code TODO: try to refactor this code fragment
+    def app_register_form_field_price(self, name:str, expand:int, txt_state:bool): 
+            return Container(
+                expand=expand,
+                height=45,
+                bgcolor='#EBEBEB',
+                border_radius=6,
+                padding=8,
+                content=Column(
+                    spacing=1,
+                    controls=[
+                        Text(
+                            value=name,
+                            size=9,
+                            color='black',
+                            weight='bold'
+                        ),
+                        TextField(
+                            border_color="transparent",
+                            on_change= lambda e: self.on_change_input(e),
+                            height=20,
+                            disabled=txt_state,
+                            text_size=13,
+                            prefix_text="$ ",
+                            prefix_style=TextStyle(
+                                color='black',
+                                weight='bold',
+                                size=12,
+                            ),
+                            content_padding=0,
+                            cursor_color="black",
+                            cursor_width=1,
+                            cursor_height=18,
+                            color='black',
+                        ),
+                    ],
+                ),
+            )
+
+
+    def on_change_input(self, e):
+        for key, value in control_map.items():
+            if key == 'AppRegisterForm':
+                # 3RD Row in FormQuote
+                amount = value.controls[0].content.controls[2].controls[2] # Accesing to CONTROL
+                amount_value = amount.content.controls[1].value
+                unit = value.controls[0].content.controls[2].controls[3] # Accesing to CONTROL
+                unit_value = unit.content.controls[1].value
+                subtotal = value.controls[0].content.controls[2].controls[4] # Accesing to CONTROL
+                try:
+                    if unit_value == '':
+                        subtotal.content.controls[1].value = ''
+                        subtotal.content.controls[1].update()
+                        amount.content.controls[1].value = ''
+                        amount.content.controls[1].update()
+                    else:
+                        total_of_subtotal = (int(amount_value)) * int(unit_value)
+                        subtotal.content.controls[1].value = int(total_of_subtotal)
+                        subtotal.content.controls[1].update()
+                except ValueError as v:
+                    #TODO: ARREGLAR ERROR STYLE TEXT
+                    # price_txt.content.controls[1].error_text = "Ingresar sólo números"
+                    # price_txt.content.controls[1].update()
+                    print(v)
 
     def build(self):
         self.app_form_input_instance()
@@ -36,7 +101,7 @@ class AppRegisterForm(UserControl):
                         controls=[
                             AppFormQuote.app_form_input_field(self, "Número Cotización", 1, True, return_new_quote()),
                             AppFormQuote.app_form_input_field(self, "Rut", 1, False, None),
-                            AppFormQuote.app_form_input_field(self, "Empresa", 2, False, None),
+                            AppFormQuote.app_form_input_field(self, "Cliente", 2, False, None),
                             AppFormQuote.app_form_input_field(self, "Solicitado por", 2, False, None),
                             AppFormQuote.app_form_input_field(self, "Fecha", 1, True, return_date()),
                         ]
@@ -52,8 +117,8 @@ class AppRegisterForm(UserControl):
                             AppFormQuote.app_form_input_field(self, "Categoría", 7, False, None),
                             AppFormQuote.app_form_input_field(self, "Tipo Unidad", 1, False, None),
                             AppFormQuote.app_form_input_field(self, "Cantidad", 1, False, None),
-                            AppFormQuote.app_form_input_field(self, "Valor unitario", 1, False, None),
-                            AppFormQuote.app_form_input_field(self, "Subtotal", 1, True, None),
+                            self.app_register_form_field_price("Valor unitario", 1, False),
+                            self.app_register_form_field_price("Subtotal", 1, True),
                         ]
                     ),
                     Divider(height=2, color="transparent"),
@@ -69,7 +134,10 @@ class AppRegisterForm(UserControl):
                             Row(
                                 alignment=MainAxisAlignment.END,
                                 controls=[
-                                    ButtonNavigation(page, 'register', 'No hago nada', icons.PERSON_ROUNDED, False, True)
+                                    # ButtonNavigation(page, 'register', 'Registrar categoría', icons.CATEGORY_ROUNDED, False, True),
+                                    return_register_form_button(),
+                                    return_category_register_button(),
+                                    # ButtonNavigation(page, 'register', 'Registrar categoría', icons.PERSON_ROUNDED, False, True),
                                 ],
                             ),
                         ],

@@ -56,6 +56,23 @@ class Cotizacion:
         self.iva = iva
 
 
+class Categoria:
+    def __init__(self,
+        nombre_categoria,
+        tipo_unidad,
+        cantidad,
+        valor_unitario,
+        subtotal
+    ):
+        self.nombre_categoria = nombre_categoria
+        self.tipo_unidad = tipo_unidad
+        self.cantidad = cantidad
+        self.valor_unitario = valor_unitario
+        self.subtotal = subtotal
+
+
+
+
 class ButtonNavigation(UserControl):
     def __init__(self, page, rout:str, txt_value:str, icon, icon_state1:bool, icon_state2:bool):
         super().__init__()

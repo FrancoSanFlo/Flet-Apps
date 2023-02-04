@@ -188,7 +188,7 @@ class AppFormQuote(UserControl):
     def on_change_input(self, e):
         for key, value in control_map.items():
             if key == 'AppFormQuote':
-                # 4TH Row in FormQuote
+                # 5TH Row in FormQuote
                 price_txt = value.controls[0].content.controls[4].controls[0]
                 iva_txt = value.controls[0].content.controls[4].controls[1]
                 declared_price = price_txt.content.controls[1].value
@@ -317,7 +317,7 @@ class AppFormQuote(UserControl):
                     ),
                     Row(
                         controls=[
-                            self.app_form_input_field_price("Neto", 1, True),
+                            self.app_form_input_field_price("Neto", 1, False),
                             self.app_form_input_field_price("IVA", 1, True),
                         ],
                     ),
