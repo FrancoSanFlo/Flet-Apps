@@ -318,7 +318,7 @@ class AppFormQuote(UserControl):
                     Row(
                         controls=[
                             self.app_form_input_field_price("Neto", 1, False),
-                            self.app_form_input_field_price("IVA", 1, True),
+                            self.app_form_input_field_price("IVA incluido", 1, True),
                         ],
                     ),
                     Divider(height=2, color="transparent"),

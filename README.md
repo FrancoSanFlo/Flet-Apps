@@ -17,3 +17,5 @@ Flet CRM App -> Franco Sánchez
 Flet Data Table App -> Line Indent (YouTube)
 
 Flet Cost Test App(unfinished) -> Franco Sánchez 
+
+Flet Calculator App -> Franco Sánchez 

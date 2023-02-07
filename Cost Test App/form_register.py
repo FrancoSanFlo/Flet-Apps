@@ -115,7 +115,7 @@ class AppRegisterForm(UserControl):
                     Row(
                         controls=[
                             AppFormQuote.app_form_input_field(self, "Categoría", 7, False, None),
-                            AppFormQuote.app_form_input_field(self, "Tipo Unidad", 1, False, None),
+                            AppFormQuote.app_form_input_field(self, "Tipo Unidad", 1, True, "GL"),
                             AppFormQuote.app_form_input_field(self, "Cantidad", 1, False, None),
                             self.app_register_form_field_price("Valor unitario", 1, False),
                             self.app_register_form_field_price("Subtotal", 1, True),

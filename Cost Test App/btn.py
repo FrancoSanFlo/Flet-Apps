@@ -58,10 +58,10 @@ def return_cotizacion(data_quote):
 def save_into_excel():
 
     # FOR DESKTOP
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
     
     ws = wb.active
     max_row = int(ws.max_row) + 1
@@ -91,9 +91,9 @@ def save_into_excel():
     min_column = ws.min_column
 
     # FOR DESKTOP
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
     # # FOR NOTEBOOK
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
 def clean_data_fields():
@@ -243,6 +243,7 @@ def register_quote(e):
             pass
     pass
 
+
 # Buttons
 def return_form_button():
     return Container(
@@ -256,7 +257,7 @@ def return_form_button():
                 controls=[
                     Icon(
                         name=icons.ADD_ROUNDED,
-                        size=12
+                        size=16
                     ),
                     Text(
                         "Enviar cambios",
@@ -290,7 +291,7 @@ def return_quotes_button():
                 controls=[
                     Icon(
                         name=icons.REFRESH_ROUNDED,
-                        size=12
+                        size=16
                     ),
                     Text(
                         "Cargar cotizaciones",
@@ -324,7 +325,7 @@ def return_category_register_button():
                 controls=[
                     Icon(
                         name=icons.CATEGORY_ROUNDED,
-                        size=12
+                        size=16
                     ),
                     Text(
                         "Registar categoría",
@@ -358,7 +359,7 @@ def return_register_form_button():
                 controls=[
                     Icon(
                         name=icons.CHECK_CIRCLE_ROUNDED,
-                        size=12
+                        size=16
                     ),
                     Text(
                         "Registar cotización",
@@ -379,3 +380,4 @@ def return_register_form_button():
             width=170,
         ),
     )
+
