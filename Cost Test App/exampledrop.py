@@ -1,9 +1,6 @@
-lista = [1, 3, 6, 5]
+from database import *
 
-neto = 0
-
-for i in lista:
-    neto += i
-
-print(neto)
-
+db = Database.ConnectToDatabase()
+record = Database.LastRecord(db)
+print(record)
+# Database.UpdateDatabase(db, ("EPIC", record[1]), "Cliente")

@@ -212,11 +212,12 @@ class AppFormQuote(UserControl):
             if key == 'AppFormQuote':
                 record = Database.SearchByQuote(db , [value.controls[0].content.controls[0].controls[0].content.controls[1].value])
                 record = list(record)
-                for i in range(9, 13):
-                    if record[i] == 1:
-                        record[i] = 'SI'
-                    else:
-                        record[i] = 'NO'
+                # TODO: ARREGLAR BITS EN BASE DE DATOS
+                # for i in range(9, 13):
+                #     if record[i] == 1:
+                #         record[i] = 'SI'
+                #     else:
+                #         record[i] = 'NO'
                 """"NOTE: PARA VER DONDE ESTOY"""
                 print(record)
 
@@ -248,6 +249,7 @@ class AppFormQuote(UserControl):
                 value.controls[0].content.controls[2].controls[0].content.controls[1].update()
 
                 # Fourth Row From AppFormQuote
+                # FILLING STATE VARIABLES
                 for db_output in value.controls[0].content.controls[3].controls[:]:
                     if db_output.content.controls[0].value == 'Estado':
                         if record[8] == 1:
@@ -256,8 +258,8 @@ class AppFormQuote(UserControl):
                         else:
                             db_output.content.controls[1].value = 'NO ENVIADA'
                             db_output.content.controls[1].update()
-                count = 9
-                for i in range(1, 5):
+                count = 8
+                for i in range(0, 5):
                     db_output = value.controls[0].content.controls[3].controls[i]
                     db_output.content.controls[1].value = record[count]
                     db_output.content.controls[1].update()

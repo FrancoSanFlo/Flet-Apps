@@ -61,7 +61,10 @@ class Database:
     #     c.execute("DELETE FROM tasks WHERE Task=?", value)
     #     db.commit()
 
-    # def UpdateDatabase(db, value):
-        # c = db.cursor()
-        # c.execute("UPDATE tasks SET Task=? WHERE Task=?", value)
-        # db.commit()
+    def UpdateDatabase(db, value):
+        c = db.cursor()
+        # c.execute(f"UPDATE cotizaciones SET {dato}=? WHERE N_cotizacion=?", value)
+        c.execute("""UPDATE cotizaciones SET Solicitud=?, Descripcion=?, Estado=?, 
+        Ganada=?, Entregada=?, Facturada=?, Pagado=?, Folio=?, Fecha_factura=?, Factoring=? WHERE N_cotizacion=?""", value)
+        db.commit()
+        print("ejecutado")

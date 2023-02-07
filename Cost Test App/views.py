@@ -8,6 +8,7 @@ import flet
 from header import AppHeader
 from form_quote import AppFormQuote
 from form_register import AppRegisterForm
+from data_table import AppDataTable
 
 
 def views_handler(page):
@@ -20,6 +21,13 @@ def views_handler(page):
                 AppHeader(),
                 Divider(height=2, color="transparent"),
                 AppRegisterForm(),
+                Column(
+                    scroll='hidden',
+                    expand=True,
+                    controls=[
+                        AppDataTable()
+                    ]
+                ),
                 
             ],
         ),
