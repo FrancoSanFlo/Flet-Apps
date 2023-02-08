@@ -29,6 +29,8 @@ def views_handler(page):
                     ]
                 ),
                 
+                
+                
             ],
         ),
         '/quote': View(

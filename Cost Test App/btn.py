@@ -9,6 +9,7 @@ from form_helper import return_date, return_new_quote, Cotizacion, Categoria, Fo
 
 control_map = return_control_reference()
 categories_list = []
+total_value_ctz = []
 
 def return_cotizacion(data_quote):
     n_cotizacion = data_quote[0]
@@ -58,10 +59,10 @@ def return_cotizacion(data_quote):
 def save_into_excel():
 
     # FOR DESKTOP
-    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK
-    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
     
     ws = wb.active
     max_row = int(ws.max_row) + 1
@@ -91,9 +92,42 @@ def save_into_excel():
     min_column = ws.min_column
 
     # FOR DESKTOP
-    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
     # # FOR NOTEBOOK
-    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    wb.close()
+
+def update_into_excel(n_cotizacion):
+    # FOR DESKTOP
+    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+
+    # FOR NOTEBOOK
+    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+
+    ws = wb.active
+    dato_row_update = 0
+
+    db = Database.ConnectToDatabase()
+    record = Database.SearchByQuote(db, [n_cotizacion])
+    
+    # VALIDATION FOR SEARCH BY QUOTE 
+    if record == None:
+        print("NO EXISTE EL DATO INGRESADO", ValueError)
+    else:
+        for row in ws.iter_rows(min_row=ws.min_row, max_col=ws.min_column, max_row=ws.max_row):
+            for cell in row:
+                if cell.value == record[0]:
+                    dato_row_update = cell.row
+        # INSERTION OF DATA
+        for i in range(ws.min_column, ws.max_column+1):
+            ws.cell(row=dato_row_update, column=i).value = record[i-1]
+        print("EXCEL ACTUALIZADO")
+
+    # FOR DESKTOP
+    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    
+    # # FOR NOTEBOOK
+    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
 def update_input_data(e):
@@ -120,40 +154,33 @@ def update_input_data(e):
                 db, (solicitud, descripcion, estado, ganada, entregado, facturado, pagado, folio, fecha_factura, factoring, n_cotizacion)
             )
             db.close()
+            update_into_excel(n_cotizacion)
 
 def clean_data_fields():
     for key, value in control_map.items():
-        if key == 'AppFormQuote':
+        if key == 'AppRegisterForm':
             for user_input in value.controls[0].content.controls[0].controls[:]:
+                # data_cotizacion.append(user_input.content.controls[1].value)
                 if user_input.content.controls[0].value == 'Número Cotización':
                     user_input.content.controls[1].value = return_new_quote()
-                    user_input.content.controls[1].update()
-                elif user_input.content.controls[0].value == 'Fecha solicitud':
-                    user_input.content.controls[1].value = return_date()
                     user_input.content.controls[1].update()
                 else:
                     user_input.content.controls[1].value = ''
                     user_input.content.controls[1].update()
 
-            for user_input in value.controls[0].content.controls[1].controls[:]:
-                user_input.content.controls[1].value = ''
-                user_input.content.controls[1].update()
+            value.controls[0].content.controls[1].controls[0].content.controls[1].value = ''
+            value.controls[0].content.controls[1].controls[0].content.controls[1].update()
 
             for user_input in value.controls[0].content.controls[2].controls[:]:
                 user_input.content.controls[1].value = ''
                 user_input.content.controls[1].update()
 
-            for user_input in value.controls[0].content.controls[3].controls[:]:
-                user_input.content.controls[1].value = ''
-                user_input.content.controls[1].update()
-            
-            for user_input in value.controls[0].content.controls[4].controls[:]:
-                if  user_input.content.controls[0].value == 'Neto':
-                    user_input.content.controls[1].value = ''
-                    user_input.content.controls[1].update()
+            for i in range(0, 5):
+                if value.controls[0].content.controls[2].controls[i].content.controls[1].value == 'GL':
+                    pass
                 else:
-                    user_input.content.controls[1].value = ''
-                    user_input.content.controls[1].update()
+                    value.controls[0].content.controls[2].controls[i].content.controls[1].value = ''
+                    value.controls[0].content.controls[2].controls[i].content.controls[1].update()
 
 def get_input_data(e):
     data_cotizacion = []
@@ -166,9 +193,11 @@ def get_input_data(e):
             user_description = value.controls[0].content.controls[1].controls[0].content.controls[1].value
             data_cotizacion.append(user_description)
 
-            for user_input in value.controls[0].content.controls[2].controls[:]:
-                user_input.content.controls[1].value = ''
-                user_input.content.controls[1].update()
+            # for user_input in value.controls[0].content.controls[2].controls[:]:
+            #     user_input.content.controls[1].value = ''
+            #     user_input.content.controls[1].update()
+            clean_data_fields()
+
 
     ctz = return_cotizacion(data_cotizacion)
 
@@ -198,7 +227,7 @@ def get_input_data(e):
     db.close()
 
     save_into_excel()
-    # clean_data_fields()
+    clean_data_fields()
     categories_list = []
 
 def fill_quotes(e):
@@ -225,11 +254,25 @@ def register_category(e):
             unit_value = value.controls[0].content.controls[2].controls[3].content.controls[1].value
             subtotal_value = value.controls[0].content.controls[2].controls[4].content.controls[1].value
 
+            #TODO: ARREGLAR TOTAL
+            total_value = 0
             if name_category_value == '' or type_unit_value == '' or amount_value == '' or unit_value == '' or subtotal_value == '':
                 print('SOME FIELD IS EMPTY')
             else:
                 categoria = Categoria(name_category_value, type_unit_value, int(amount_value), int(unit_value), int(subtotal_value))
                 categories_list.append(categoria)
+
+                total_value = 0 
+                total_value_ctz.append(int(categoria.subtotal))
+
+                # TODO: ORDENAR
+                # RECORRE LISTA DE VALORES DE SUBTOTALES PARA LA COTIZACIÓN
+                for sub in total_value_ctz:
+                    total_value += sub
+                value.controls[0].content.controls[3].controls[0].content.controls[1].value = total_value
+                value.controls[0].content.controls[3].controls[0].content.controls[1].update()
+
+                # TODO: BORRAR DETALLE POR CONSOLA
                 for i in categories_list:
                     print(i.subtotal)
 

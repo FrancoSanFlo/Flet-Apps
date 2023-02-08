@@ -58,7 +58,47 @@ class AppRegisterForm(UserControl):
                 ),
             )
 
+    def app_register_form_total_price(self, name:str, expand:int, txt_state:bool, txt_value:str): 
+        return Container(
+            expand=expand,
+            height=45,
+            width=222,
+            bgcolor='#EBEBEB',
+            border_radius=6,
+            padding=8,
+            content=Column(
+                spacing=1,
+                controls=[
+                    Text(
+                        value=name,
+                        size=9,
+                        color='black',
+                        weight='bold'
+                    ),
+                    TextField(
+                        border_color="transparent",
+                        height=20,
+                        value=txt_value,
+                        disabled=txt_state,
+                        text_size=13,
+                        prefix_text="$ ",
+                            prefix_style=TextStyle(
+                                color='black',
+                                weight='bold',
+                                size=12,
+                            ),
+                        content_padding=0,
+                        cursor_color="black",
+                        cursor_width=1,
+                        cursor_height=18,
+                        color='black',
+                    ),
+                ],
+            ),
+        )
 
+
+    # Operations
     def on_change_input(self, e):
         for key, value in control_map.items():
             if key == 'AppRegisterForm':
@@ -84,12 +124,14 @@ class AppRegisterForm(UserControl):
                     # price_txt.content.controls[1].update()
                     print(v)
 
+
+
     def build(self):
         self.app_form_input_instance()
 
         return Container(
             expand=True,
-            height=250,
+            height=300,
             bgcolor='white10',
             border=border.all(1, "#EBEBEB"),
             border_radius=8,
@@ -119,6 +161,12 @@ class AppRegisterForm(UserControl):
                             AppFormQuote.app_form_input_field(self, "Cantidad", 1, False, None),
                             self.app_register_form_field_price("Valor unitario", 1, False),
                             self.app_register_form_field_price("Subtotal", 1, True),
+                        ]
+                    ),
+                    Row(
+                        alignment=MainAxisAlignment.END,
+                        controls=[
+                            self.app_register_form_total_price("Total", 0, True, None)
                         ]
                     ),
                     Divider(height=2, color="transparent"),
