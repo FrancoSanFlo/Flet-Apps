@@ -125,7 +125,6 @@ class AppRegisterForm(UserControl):
                     print(v)
 
 
-
     def build(self):
         self.app_form_input_instance()
 
@@ -166,7 +165,7 @@ class AppRegisterForm(UserControl):
                     Row(
                         alignment=MainAxisAlignment.END,
                         controls=[
-                            self.app_register_form_total_price("Total", 0, True, None)
+                            self.app_register_form_total_price("Neto", 0, True, None)
                         ]
                     ),
                     Divider(height=2, color="transparent"),

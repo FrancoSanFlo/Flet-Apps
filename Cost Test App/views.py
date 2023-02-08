@@ -26,11 +26,8 @@ def views_handler(page):
                     expand=True,
                     controls=[
                         AppDataTable()
-                    ]
+                    ],
                 ),
-                
-                
-                
             ],
         ),
         '/quote': View(

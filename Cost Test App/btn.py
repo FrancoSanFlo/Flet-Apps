@@ -182,6 +182,10 @@ def clean_data_fields():
                     value.controls[0].content.controls[2].controls[i].content.controls[1].value = ''
                     value.controls[0].content.controls[2].controls[i].content.controls[1].update()
 
+        if key == "AppDataTable":
+            value.controls[0].controls[0].rows.clear()
+            value.controls[0].controls[0].update()
+
 def get_input_data(e):
     data_cotizacion = []
     
@@ -193,11 +197,7 @@ def get_input_data(e):
             user_description = value.controls[0].content.controls[1].controls[0].content.controls[1].value
             data_cotizacion.append(user_description)
 
-            # for user_input in value.controls[0].content.controls[2].controls[:]:
-            #     user_input.content.controls[1].value = ''
-            #     user_input.content.controls[1].update()
             clean_data_fields()
-
 
     ctz = return_cotizacion(data_cotizacion)
 
