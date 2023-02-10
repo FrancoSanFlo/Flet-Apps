@@ -119,9 +119,6 @@ class AppRegisterForm(UserControl):
                         subtotal.content.controls[1].value = int(total_of_subtotal)
                         subtotal.content.controls[1].update()
                 except ValueError as v:
-                    #TODO: ARREGLAR ERROR STYLE TEXT
-                    # price_txt.content.controls[1].error_text = "Ingresar sólo números"
-                    # price_txt.content.controls[1].update()
                     print(v)
 
 
@@ -175,7 +172,7 @@ class AppRegisterForm(UserControl):
                             Row(
                                 alignment=MainAxisAlignment.START,
                                 controls=[
-                                    ButtonNavigation(page, 'quote', 'Editar cotización', icons.ARROW_FORWARD_ROUNDED, False, True),
+                                    # ButtonNavigation(page, 'quote', 'Editar cotización', icons.ARROW_FORWARD_ROUNDED, False, True),
                                 ],
                             ),
                             Row(

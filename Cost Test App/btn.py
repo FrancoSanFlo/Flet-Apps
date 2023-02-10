@@ -5,11 +5,13 @@ from flet import *
 from controls import return_control_reference
 from database import Database
 from openpyxl import *
+from openpyxl.drawing.image import Image
 from form_helper import return_date, return_new_quote, Cotizacion, Categoria, FormHelper
 
 control_map = return_control_reference()
 categories_list = []
 total_value_ctz = []
+
 
 def return_cotizacion(data_quote):
     n_cotizacion = data_quote[0]
@@ -56,13 +58,12 @@ def return_cotizacion(data_quote):
     )
     return cotizacion
 
-def save_into_excel():
+def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud, descripcion, neto):
 
-    # FOR DESKTOP
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
-
-    # FOR NOTEBOOK
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # FOR DESKTOP - COT
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    # FOR NOTEBOOK - COT
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
     
     ws = wb.active
     max_row = int(ws.max_row) + 1
@@ -91,18 +92,53 @@ def save_into_excel():
 
     min_column = ws.min_column
 
-    # FOR DESKTOP
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
-    # # FOR NOTEBOOK
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # FOR DESKTOP - COT SAVE
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    # # FOR NOTEBOOK - COT SAVE
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
+
+    """PARA GUARDAR EL FORMATO DE COTIZACIÓN"""
+    # FOR DESKTOP - FORMAT
+    wb_format = load_workbook('C:\\Users\\franc\\Desktop\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
+    ws_format = wb_format.active
+
+    counter = 1
+    in_row = 18
+    # 1, 2, 6, 7, 8, 9
+    for ctg in categories_list:
+        ws_format.cell(row=in_row, column=1).value = counter
+        ws_format.cell(row=in_row, column=2).value = ctg.nombre_categoria
+        ws_format.cell(row=in_row, column=6).value = ctg.tipo_unidad
+        ws_format.cell(row=in_row, column=7).value = ctg.cantidad
+        ws_format.cell(row=in_row, column=8).value = ctg.valor_unitario
+        ws_format.cell(row=in_row, column=9).value = ctg.subtotal
+        in_row += 1
+        counter += 1
+
+
+    ws_format['B7'] = f'COTIZACIÓN N° {n_cotizacion}'
+    ws_format['B16'] = descripcion
+    ws_format['C9'] = cliente
+    ws_format['C13'] = solicitado_por
+    ws_format['H9'] = rut
+    ws_format['H11'] = fecha_solicitud
+    ws_format['I28'] = neto
+    ws_format['I59'] = neto
+
+    img = Image('images/peric.png')
+    ws_format.add_image(img, 'A1')
+
+    # FOR DESKTOP - FORMAT SAVE
+    wb_format.save(f'C:\\Users\\franc\\Desktop\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+    wb_format.close()
 
 def update_into_excel(n_cotizacion):
     # FOR DESKTOP
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
 
     ws = wb.active
     dato_row_update = 0
@@ -124,10 +160,10 @@ def update_into_excel(n_cotizacion):
         print("EXCEL ACTUALIZADO")
 
     # FOR DESKTOP
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
     
     # # FOR NOTEBOOK
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
 def update_input_data(e):
@@ -164,6 +200,9 @@ def clean_data_fields():
                 if user_input.content.controls[0].value == 'Número Cotización':
                     user_input.content.controls[1].value = return_new_quote()
                     user_input.content.controls[1].update()
+                elif user_input.content.controls[0].value == 'Fecha':
+                    user_input.content.controls[1].value = return_date()
+                    user_input.content.controls[1].update()
                 else:
                     user_input.content.controls[1].value = ''
                     user_input.content.controls[1].update()
@@ -171,16 +210,15 @@ def clean_data_fields():
             value.controls[0].content.controls[1].controls[0].content.controls[1].value = ''
             value.controls[0].content.controls[1].controls[0].content.controls[1].update()
 
-            for user_input in value.controls[0].content.controls[2].controls[:]:
-                user_input.content.controls[1].value = ''
-                user_input.content.controls[1].update()
-
             for i in range(0, 5):
                 if value.controls[0].content.controls[2].controls[i].content.controls[1].value == 'GL':
                     pass
                 else:
                     value.controls[0].content.controls[2].controls[i].content.controls[1].value = ''
                     value.controls[0].content.controls[2].controls[i].content.controls[1].update()
+
+            value.controls[0].content.controls[3].controls[0].content.controls[1].value = ''
+            value.controls[0].content.controls[3].controls[0].content.controls[1].update()
 
         if key == "AppDataTable":
             value.controls[0].controls[0].rows.clear()
@@ -226,9 +264,10 @@ def get_input_data(e):
     )
     db.close()
 
-    save_into_excel()
+    save_into_excel(ctz.n_cotizacion, ctz.rut, ctz.cliente, ctz.solicitado_por, ctz.fecha_solicitud, ctz.descripcion, ctz.neto)
     clean_data_fields()
-    categories_list = []
+    categories_list.clear()
+    total_value_ctz.clear()
 
 def fill_quotes(e):
     db = Database.ConnectToDatabase()

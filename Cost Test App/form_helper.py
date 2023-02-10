@@ -91,6 +91,7 @@ class ButtonNavigation(UserControl):
             color="white",
             content=Row(
                 alignment=MainAxisAlignment.CENTER,
+                vertical_alignment=CrossAxisAlignment.CENTER,
                 controls=[
                     Icon(
                         visible=self.icon_state1,

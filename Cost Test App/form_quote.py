@@ -117,6 +117,7 @@ class AppFormQuote(UserControl):
                             dropdown.Option("ENVIADA"),
                             dropdown.Option("NO ENVIADA"),
                         ],
+                        focused_border_color="#007C91"
                     ),
                 ],
             ),
@@ -145,8 +146,10 @@ class AppFormQuote(UserControl):
                         text_style=TextStyle(weight="bold"),
                         color='black',
                         alignment=Alignment(0, 0),
-                        on_change=lambda e: self.dropdown_quote_changed(e)
+                        on_change=lambda e: self.dropdown_quote_changed(e),
+                        focused_border_color="#007C91",
                     ),
+                    
                 ],
             ),
         )
@@ -178,6 +181,7 @@ class AppFormQuote(UserControl):
                             dropdown.Option("SI"),
                             dropdown.Option("NO"),
                         ],
+                        focused_border_color="#007C91"
                     ),
                 ],
             ),
@@ -330,7 +334,7 @@ class AppFormQuote(UserControl):
                             Row(
                                 alignment=MainAxisAlignment.START,
                                 controls=[
-                                    ButtonNavigation(page, 'register', 'Volver atrás', icons.ARROW_BACK_ROUNDED, True, False),
+                                    # ButtonNavigation(page, 'register', 'Volver atrás', icons.ARROW_BACK_ROUNDED, True, False),
                                 ]
                             ),
                             Row(

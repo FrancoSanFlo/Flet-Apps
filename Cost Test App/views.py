@@ -11,6 +11,7 @@ from form_register import AppRegisterForm
 from data_table import AppDataTable
 
 
+
 def views_handler(page):
     return {
         '/register': View(
@@ -18,7 +19,7 @@ def views_handler(page):
             bgcolor="#FDFDFD",
             padding = 10,
             controls=[
-                AppHeader(),
+                AppHeader(page),
                 Divider(height=2, color="transparent"),
                 AppRegisterForm(),
                 Column(
@@ -28,6 +29,27 @@ def views_handler(page):
                         AppDataTable()
                     ],
                 ),
+                # Container(
+                #     offset=transform.Offset(-2,0),
+                #     animate_offset=animation.Animation(1000),
+                #     content=Column(
+                #         expand=True,
+                #         controls=[
+                #             AppHeader(page),
+                #             Divider(height=2, color="transparent"),
+                #             AppRegisterForm(),
+                #             Column(
+                #                 scroll='hidden',
+                #                 expand=True,
+                #                 visible=False,
+                #                 controls=[
+                #                     AppDataTable()
+                #                 ],
+                #             ),
+
+                #         ]
+                #     ),
+                # ),
             ],
         ),
         '/quote': View(
@@ -35,7 +57,7 @@ def views_handler(page):
             bgcolor="#FDFDFD",
             padding = 10,
             controls=[
-                AppHeader(),
+                AppHeader(page),
                 Divider(height=2, color="transparent"),
                 AppFormQuote(),
             ],
