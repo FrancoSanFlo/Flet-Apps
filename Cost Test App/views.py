@@ -9,6 +9,7 @@ from header import AppHeader
 from form_quote import AppFormQuote
 from form_register import AppRegisterForm
 from data_table import AppDataTable
+from form_client import AppClientForm
 
 
 
@@ -29,37 +30,25 @@ def views_handler(page):
                         AppDataTable()
                     ],
                 ),
-                # Container(
-                #     offset=transform.Offset(-2,0),
-                #     animate_offset=animation.Animation(1000),
-                #     content=Column(
-                #         expand=True,
-                #         controls=[
-                #             AppHeader(page),
-                #             Divider(height=2, color="transparent"),
-                #             AppRegisterForm(),
-                #             Column(
-                #                 scroll='hidden',
-                #                 expand=True,
-                #                 visible=False,
-                #                 controls=[
-                #                     AppDataTable()
-                #                 ],
-                #             ),
-
-                #         ]
-                #     ),
-                # ),
             ],
         ),
         '/quote': View(
             route='/quote',
             bgcolor="#FDFDFD",
-            padding = 10,
             controls=[
                 AppHeader(page),
                 Divider(height=2, color="transparent"),
                 AppFormQuote(),
+            ],
+        ),
+        '/client': View(
+            route='/client',
+            bgcolor="#FDFDFD",
+            padding = 10,
+            controls=[
+                AppHeader(page),
+                Divider(height=2, color="transparent"),
+                AppClientForm()
             ],
         )
     }

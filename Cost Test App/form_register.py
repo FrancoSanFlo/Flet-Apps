@@ -3,8 +3,9 @@
 # modules
 import flet 
 from flet import *
-from btn import return_form_button, return_category_register_button, return_register_form_button
+from btn import return_form_button, return_category_register_button, return_register_form_button, return_clients_button
 from controls import add_to_control_reference, return_control_reference
+from database import *
 
 # app-modules
 from form_helper import return_date, return_new_quote, ButtonNavigation
@@ -97,6 +98,38 @@ class AppRegisterForm(UserControl):
             ),
         )
 
+    def app_form_dropdown_field_client_code(self, name:str, expand:int):
+        return Container(
+            expand=expand,
+            height=45,
+            width=150,
+            bgcolor='#EBEBEB',
+            border_radius=6,
+            padding=8,
+            content=Column(
+                spacing=1,
+                controls=[
+                    Text(
+                        value=name,
+                        size=9,
+                        color='black',
+                        weight='bold'
+                    ),
+                    Dropdown(
+                        height=20,
+                        text_size=10,
+                        content_padding=0,
+                        text_style=TextStyle(weight="bold"),
+                        color='black',
+                        alignment=Alignment(0, 0),
+                        on_change=lambda e: self.dropdown_client_changed(e),
+                        focused_border_color="#007C91",
+                    ),
+                    
+                ],
+            ),
+        )
+
 
     # Operations
     def on_change_input(self, e):
@@ -121,6 +154,17 @@ class AppRegisterForm(UserControl):
                 except ValueError as v:
                     print(v)
 
+    def dropdown_client_changed(self, e):
+        db = Database.ConnectToDatabase()
+        for key, value in control_map.items():
+            if key == 'AppRegisterForm':
+                record = Database.SearchByCode(db , [value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].value])
+                record = list(record)
+
+                value.controls[0].content.controls[0].controls[1].content.controls[1].value = record[1]
+                value.controls[0].content.controls[0].controls[1].content.controls[1].update()
+                value.controls[0].content.controls[0].controls[2].content.controls[1].value = record[2]
+                value.controls[0].content.controls[0].controls[2].content.controls[1].update()
 
     def build(self):
         self.app_form_input_instance()
@@ -138,8 +182,8 @@ class AppRegisterForm(UserControl):
                     Row(
                         controls=[
                             AppFormQuote.app_form_input_field(self, "Número Cotización", 1, True, return_new_quote()),
-                            AppFormQuote.app_form_input_field(self, "Rut", 1, False, None),
-                            AppFormQuote.app_form_input_field(self, "Cliente", 2, False, None),
+                            AppFormQuote.app_form_input_field(self, "Rut", 1, True, None),
+                            AppFormQuote.app_form_input_field(self, "Cliente", 2, True, None),
                             AppFormQuote.app_form_input_field(self, "Solicitado por", 2, False, None),
                             AppFormQuote.app_form_input_field(self, "Fecha", 1, True, return_date()),
                         ]
@@ -172,6 +216,8 @@ class AppRegisterForm(UserControl):
                             Row(
                                 alignment=MainAxisAlignment.START,
                                 controls=[
+                                    return_clients_button(),
+                                    self.app_form_dropdown_field_client_code("Código", 0)
                                     # ButtonNavigation(page, 'quote', 'Editar cotización', icons.ARROW_FORWARD_ROUNDED, False, True),
                                 ],
                             ),

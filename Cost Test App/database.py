@@ -13,6 +13,9 @@ class Database:
             Fecha_creacion VARCHAR(255) NOT NULL, Neto INTEGER NOT NULL, Iva INTEGER NOT NULL, Estado BIT NOT NULL,
             Ganada BIT NOT NULL, Entregada BIT NOT NULL, Facturada BIT NOT NULL, Pagado BIT NOT NULL,
             Folio VARCHAR(255) NOT NULL, Fecha_factura VARCHAR(255) NOT NULL, Factoring VARCHAR(255))""")
+
+            c.execute("""CREATE TABLE if not exists clientes (id INTEGER PRIMARY KEY, Codigo_cliente VARCHAR(3), Rut VARCHAR(255) NOT NULL, 
+            Cliente VARCHAR(255) NOT NULL, Fono VARCHAR(12), Direccion VARCHAR(255))""")
             print("DATABASE CONNECTED")
             return db
         except Exception as e:
@@ -52,6 +55,14 @@ class Database:
         records = c.fetchone()
         return records    
 
+    def UpdateDatabase(db, value):
+        c = db.cursor()
+        # c.execute(f"UPDATE cotizaciones SET {dato}=? WHERE N_cotizacion=?", value)
+        c.execute("""UPDATE cotizaciones SET Solicitud=?, Descripcion=?, Estado=?, 
+        Ganada=?, Entregada=?, Facturada=?, Pagado=?, Folio=?, Fecha_factura=?, Factoring=? WHERE N_cotizacion=?""", value)
+        db.commit()
+        print("ejecutado")
+
     # def DeleteDatabase(db, value):
     #     c = db.cursor()
     #     # quick note: here we're assuming that no two task description are the
@@ -61,10 +72,34 @@ class Database:
     #     c.execute("DELETE FROM tasks WHERE Task=?", value)
     #     db.commit()
 
-    def UpdateDatabase(db, value):
+    def LastReadCode(db):
         c = db.cursor()
-        # c.execute(f"UPDATE cotizaciones SET {dato}=? WHERE N_cotizacion=?", value)
-        c.execute("""UPDATE cotizaciones SET Solicitud=?, Descripcion=?, Estado=?, 
-        Ganada=?, Entregada=?, Facturada=?, Pagado=?, Folio=?, Fecha_factura=?, Factoring=? WHERE N_cotizacion=?""", value)
+        c.execute("""SELECT MAX(Codigo_cliente) FROM clientes""")
+        record = c.fetchone()
+        return record
+
+    def InsertDatabaseClientes(db, values):
+        c = db.cursor()
+        c.execute("""INSERT INTO clientes (Codigo_cliente, Rut, Cliente, Fono, Direccion) VALUES (?,?,?,?,?)""", values)
         db.commit()
-        print("ejecutado")
+        print("CLIENT INSERTED INTO THE DATABASE")
+
+    def SearchRutExists(db, value):
+        c = db.cursor()
+        c.execute("""SELECT Rut FROM clientes WHERE Rut=?""", value)
+        record = c.fetchone()
+        return record
+
+    def ReadDatabaseClients(db):
+        c = db.cursor()
+        # make sure to name the columns and not SELECT * FROM...
+        c.execute("""SELECT Codigo_cliente, Rut, Cliente, Fono, Direccion FROM clientes""")
+        records = c.fetchall()
+        return records
+
+    def SearchByCode(db, value):
+        c = db.cursor()
+        # make sure to name the columns and not SELECT * FROM...
+        c.execute("""SELECT Codigo_cliente, Rut, Cliente, Fono, Direccion FROM clientes WHERE Codigo_cliente=?""", value)
+        records = c.fetchone()
+        return records  

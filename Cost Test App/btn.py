@@ -6,7 +6,7 @@ from controls import return_control_reference
 from database import Database
 from openpyxl import *
 from openpyxl.drawing.image import Image
-from form_helper import return_date, return_new_quote, Cotizacion, Categoria, FormHelper
+from form_helper import return_date, return_new_quote, Cotizacion, Categoria, FormHelper, Cliente, return_new_client_code, return_existence
 
 control_map = return_control_reference()
 categories_list = []
@@ -224,6 +224,7 @@ def clean_data_fields():
             value.controls[0].controls[0].rows.clear()
             value.controls[0].controls[0].update()
 
+# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def get_input_data(e):
     data_cotizacion = []
     
@@ -333,6 +334,50 @@ def register_category(e):
             else:
                 value.controls[0].controls[0].rows.append(data)
                 value.controls[0].controls[0].update()
+
+
+# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
+def get_client_data(e):
+    client_data = []
+    for key, value in control_map.items():
+        if key == 'AppClientForm':
+            for user_input in value.controls[0].content.controls[0].controls[:]:
+                if user_input.content.controls[1].value == '':
+                    print("SOME FIELD IS EMPTY")
+                else:
+                    client_data.append(user_input.content.controls[1].value)
+    
+    if len(client_data) == 5:
+        client = Cliente(client_data[0], client_data[1], client_data[2], client_data[3], client_data[4])
+        if return_existence(client.rut):
+            print("RUT EXISTENTE")
+        else:
+            db = Database.ConnectToDatabase()
+            Database.InsertDatabaseClientes(db, (client.codigo_cliente, client.rut, client.cliente, client.fono, client.direccion))
+            client_data.clear()
+            # NOTE: CLEAN DATA CLIENT FIELDS
+            for key, value in control_map.items():
+                if key == 'AppClientForm':
+                    for user_input in value.controls[0].content.controls[0].controls[:]:
+                        if user_input.content.controls[0].value == 'Código cliente':
+                            user_input.content.controls[1].value = return_new_client_code()
+                            user_input.content.controls[1].update()
+                        else:
+                            user_input.content.controls[1].value = ''
+                            user_input.content.controls[1].update()
+    else:
+        print("CLIENTE NO INGRESADO")
+
+def fill_clients(e):
+    db = Database.ConnectToDatabase()
+    for key, value in control_map.items():
+        if key == 'AppRegisterForm':
+            code = value.controls[0].content.controls[5].controls[0].controls[1].content.controls[0].value
+            if code == 'Código':
+                value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].options.clear()
+                for code in Database.ReadDatabaseClients(db)[::-1]:
+                    value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].options.append(dropdown.Option(code[0]))
+                value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].update()
 
 
 # Buttons
@@ -472,3 +517,70 @@ def return_register_form_button():
         ),
     )
 
+def return_client_form_button():
+    return Container(
+        alignment=alignment.center,
+        content=ElevatedButton(
+            on_click=lambda e: get_client_data(e),
+            bgcolor='#007C91',
+            color="white",
+            content=Row(
+                alignment=MainAxisAlignment.CENTER,
+                controls=[
+                    Icon(
+                        name=icons.PERSON_ADD_ROUNDED,
+                        size=16
+                    ),
+                    Text(
+                        "Ingresar cliente",
+                        size=12,
+                        weight="bold",
+                    ),
+                ],
+            ),
+            style=ButtonStyle(
+                shape={
+                    "": RoundedRectangleBorder(radius=6),
+                },
+                color={
+                    "": "white",
+                },
+            ),
+            height=42,
+            width=170,
+        ),
+    )
+
+def return_clients_button():
+    return Container(
+        alignment=alignment.center,
+        content=ElevatedButton(
+            on_click=lambda e: fill_clients(e),
+            bgcolor='#007C91',
+            color="white",
+            content=Row(
+                alignment=MainAxisAlignment.CENTER,
+                controls=[
+                    Icon(
+                        name=icons.REFRESH_ROUNDED,
+                        size=16
+                    ),
+                    Text(
+                        "Cargar clientes",
+                        size=12,
+                        weight="bold",
+                    ),
+                ],
+            ),
+            style=ButtonStyle(
+                shape={
+                    "": RoundedRectangleBorder(radius=6),
+                },
+                color={
+                    "": "white",
+                },
+            ),
+            height=42,
+            width=170,
+        ),
+    )

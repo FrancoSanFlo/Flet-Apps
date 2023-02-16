@@ -13,11 +13,40 @@ control_map = return_control_reference()
 def return_date():
     return datetime.now().strftime("%d-%m-%Y")
     
+# NOTE: ÚLTIMO REGISTRO VALIDADO
 def return_new_quote():
     db = Database.ConnectToDatabase()
-    new_quote = Database.LastRecord(db)
-    return int(new_quote[1])+1
+    new_quote = 0
+    quote = Database.LastRecord(db)
+    if quote == None:
+        new_quote = 1
+        return new_quote
+    else:
+        new_quote = int(quote[1]) + 1
+        return new_quote
 
+# NOTE: VALIDATION FOR LAST RECORD IN CLIENTES TABLE
+def return_new_client_code():
+    new_client_code = ''
+    db = Database.ConnectToDatabase()
+    last_client_code = Database.LastReadCode(db) 
+    if last_client_code[0] == None:
+        new_client_code = '001'
+        return new_client_code
+    else:
+        int_client = int(last_client_code[0]) + 1
+        if len(str(int_client)) == 1:
+            new_client_code = '00' + str(int_client)
+        elif len(str(int_client)) == 2:
+            new_client_code = '0' + str(int_client)
+        else:
+            new_client_code = str(int_client)
+        return new_client_code
+
+def return_existence(rut):
+    db = Database.ConnectToDatabase()
+    repetido = Database.SearchRutExists(db, [rut])
+    return True if repetido != None else False
 
 class Cotizacion:
     def __init__(self, 
@@ -71,6 +100,24 @@ class Categoria:
         self.subtotal = subtotal
 
 
+class Cliente:
+    def __init__(self,
+        codigo_cliente,
+        rut,
+        cliente,
+        fono,
+        direccion
+    ):
+        self.codigo_cliente = codigo_cliente
+        self.rut = rut
+        self.cliente = cliente
+        self.fono = fono
+        self.direccion = direccion
+
+    
+
+
+# TODO: VERIFICAR FUNCIONALIDAD DE ESTE BOTÓN
 class ButtonNavigation(UserControl):
     def __init__(self, page, rout:str, txt_value:str, icon, icon_state1:bool, icon_state2:bool):
         super().__init__()

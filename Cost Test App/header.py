@@ -61,6 +61,20 @@ class AppHeader(UserControl):
             )
         )
 
+    def app_header_client_route(self):
+        return Container(
+            alignment=alignment.center,
+            padding=padding.only(left=20, top=0, bottom=0, right=10), 
+            on_click=lambda _: self.page.go('/client'),
+            on_hover=lambda e: self.animate_client_route(e),
+            content=Text(
+                "Registrar Cliente",
+                size=13,
+                weight="bold",
+                text_align=TextAlign.CENTER,
+            )
+        )
+
 
     def animate_register_route(self, e):
         if e.data == 'true':
@@ -86,6 +100,18 @@ class AppHeader(UserControl):
             self.controls[0].content.controls[1].controls[1].update()
             self.controls[0].content.controls[1].controls[1].content.update()
 
+    def animate_client_route(self, e):
+        if e.data == 'true':
+            self.controls[0].content.controls[1].controls[2].bgcolor = "white"
+            self.controls[0].content.controls[1].controls[2].content.color = "#007C91"
+            self.controls[0].content.controls[1].controls[2].update()
+            self.controls[0].content.controls[1].controls[2].content.update()
+        else:
+            self.controls[0].content.controls[1].controls[2].bgcolor = "#007C91"
+            self.controls[0].content.controls[1].controls[2].content.color = "white"
+            self.controls[0].content.controls[1].controls[2].update()
+            self.controls[0].content.controls[1].controls[2].content.update()
+
     def build(self):
         self.app_header_instance()
 
@@ -106,6 +132,7 @@ class AppHeader(UserControl):
                         controls=[
                             self.app_header_register_route(),
                             self.app_header_quote_route(),
+                            self.app_header_client_route(),
                         ],
                     ),
                     self.app_header_avatar()
