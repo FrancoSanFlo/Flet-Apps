@@ -92,7 +92,6 @@ class Database:
 
     def ReadDatabaseClients(db):
         c = db.cursor()
-        # make sure to name the columns and not SELECT * FROM...
         c.execute("""SELECT Codigo_cliente, Rut, Cliente, Fono, Direccion FROM clientes""")
         records = c.fetchall()
         return records

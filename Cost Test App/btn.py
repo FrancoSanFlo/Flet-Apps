@@ -166,10 +166,10 @@ def update_into_excel(n_cotizacion):
     # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
+# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def update_input_data(e):
     for key, value in control_map.items():
         if key == 'AppFormQuote':
-            # for user_input in value.controls[0].content.controls[0].controls[:]:
             n_cotizacion = value.controls[0].content.controls[0].controls[0].content.controls[1].value
 
             solicitud = value.controls[0].content.controls[0].controls[3].content.controls[1].value
@@ -185,12 +185,18 @@ def update_input_data(e):
             entregado = value.controls[0].content.controls[3].controls[2].content.controls[1].value
             facturado = value.controls[0].content.controls[3].controls[3].content.controls[1].value
             pagado = value.controls[0].content.controls[3].controls[4].content.controls[1].value
-            db = Database.ConnectToDatabase()
-            Database.UpdateDatabase(
-                db, (solicitud, descripcion, estado, ganada, entregado, facturado, pagado, folio, fecha_factura, factoring, n_cotizacion)
-            )
-            db.close()
-            update_into_excel(n_cotizacion)
+
+            # VALIDATION
+            if n_cotizacion == '' or solicitud == '' or folio == '' or factoring == '' or fecha_factura == '' or descripcion == '':
+                print('SOME FIELD IS EMPTY') 
+                pass
+            else:
+                db = Database.ConnectToDatabase()
+                Database.UpdateDatabase(
+                    db, (solicitud, descripcion, estado, ganada, entregado, facturado, pagado, folio, fecha_factura, factoring, n_cotizacion)
+                )
+                db.close()
+                update_into_excel(n_cotizacion)
 
 def clean_data_fields():
     for key, value in control_map.items():
@@ -224,65 +230,80 @@ def clean_data_fields():
             value.controls[0].controls[0].rows.clear()
             value.controls[0].controls[0].update()
 
-# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
+# TODO: SEND MESSAGE TO SCREEN, VALIDATION         
 def get_input_data(e):
     data_cotizacion = []
     
     for key, value in control_map.items():
         if key == 'AppRegisterForm':
             for user_input in value.controls[0].content.controls[0].controls[:]:
-                data_cotizacion.append(user_input.content.controls[1].value)
+                if user_input.content.controls[1].value == '':
+                    pass
+                else:
+                    data_cotizacion.append(str(user_input.content.controls[1].value).upper())
 
             user_description = value.controls[0].content.controls[1].controls[0].content.controls[1].value
-            data_cotizacion.append(user_description)
+            data_cotizacion.append(str(user_description).upper())
 
+            
+    # VALIDATION FOR REGISTER QUOTE
+    if len(data_cotizacion) != 6:
+        print("FALTAN DATOS")
+    else:
+        if len(categories_list) < 1:
+            print("NO HAY CATEGORIAS INGRESADAS")
+        else:
+            ctz = return_cotizacion(data_cotizacion)
+
+            # Calling to the DB Class
+            db = Database.ConnectToDatabase()
+            Database.InsertDatabase(
+                db, 
+                (
+                    ctz.n_cotizacion, 
+                    ctz.cliente, 
+                    ctz.rut, 
+                    ctz.solicitado_por,
+                    ctz.descripcion,
+                    ctz.fecha_solicitud,
+                    int(ctz.neto),
+                    int(ctz.iva),
+                    ctz.estado,
+                    ctz.ganada,
+                    ctz.entregado,
+                    ctz.facturado,
+                    ctz.pagado,
+                    ctz.folio,
+                    ctz.fecha_factura,
+                    ctz.factoring
+                )
+            )
+            db.close()
+
+            save_into_excel(ctz.n_cotizacion, ctz.rut, ctz.cliente, ctz.solicitado_por, ctz.fecha_solicitud, ctz.descripcion, ctz.neto)
             clean_data_fields()
+            categories_list.clear()
+            total_value_ctz.clear()
 
-    ctz = return_cotizacion(data_cotizacion)
-
-    # Calling to the DB Class
-    db = Database.ConnectToDatabase()
-    Database.InsertDatabase(
-        db, 
-        (
-            ctz.n_cotizacion, 
-            ctz.cliente, 
-            ctz.rut, 
-            ctz.solicitado_por,
-            ctz.descripcion,
-            ctz.fecha_solicitud,
-            int(ctz.neto),
-            int(ctz.iva),
-            ctz.estado,
-            ctz.ganada,
-            ctz.entregado,
-            ctz.facturado,
-            ctz.pagado,
-            ctz.folio,
-            ctz.fecha_factura,
-            ctz.factoring
-        )
-    )
-    db.close()
-
-    save_into_excel(ctz.n_cotizacion, ctz.rut, ctz.cliente, ctz.solicitado_por, ctz.fecha_solicitud, ctz.descripcion, ctz.neto)
-    clean_data_fields()
-    categories_list.clear()
-    total_value_ctz.clear()
-
+# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def fill_quotes(e):
     db = Database.ConnectToDatabase()
+    records = Database.ReadDatabase(db)
     for key, value in control_map.items():
         if key == 'AppFormQuote':
-            for user_input in value.controls[0].content.controls[0].controls[:]:
-                if user_input.content.controls[0].value == 'Número Cotización':
-                    user_input.content.controls[1].options.clear()
-                    for quote in Database.ReadDatabase(db)[::-1]:
-                        user_input.content.controls[1].options.append(dropdown.Option(quote[0]))
-                    user_input.content.controls[1].update()
-            
-            value.controls[0].content.controls[6].controls[1].controls[1].content.visible = False
+            if len(records) == 0:
+                print('THE DATABASE IS EMPTY')
+            else:
+                for user_input in value.controls[0].content.controls[0].controls[:]:
+                    if user_input.content.controls[0].value == 'Número Cotización':
+                        user_input.content.controls[1].options.clear()
+                        for quote in Database.ReadDatabase(db)[::-1]:
+                            user_input.content.controls[1].options.append(dropdown.Option(quote[0]))
+                        user_input.content.controls[1].update()
+                
+                value.controls[0].content.controls[6].controls[1].controls[1].content.visible = False
 
+# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def register_category(e):
     for key, value in control_map.items():
         if key == 'AppRegisterForm':
@@ -295,38 +316,41 @@ def register_category(e):
             subtotal_value = value.controls[0].content.controls[2].controls[4].content.controls[1].value
 
             #TODO: ARREGLAR TOTAL
-            total_value = 0
+            # total_value = 0
             if name_category_value == '' or type_unit_value == '' or amount_value == '' or unit_value == '' or subtotal_value == '':
                 print('SOME FIELD IS EMPTY')
             else:
-                categoria = Categoria(name_category_value, type_unit_value, int(amount_value), int(unit_value), int(subtotal_value))
-                categories_list.append(categoria)
+                try:
+                    categoria = Categoria(str(name_category_value).upper(), type_unit_value, int(amount_value), int(unit_value), int(subtotal_value))
+                    categories_list.append(categoria)
 
-                total_value = 0 
-                total_value_ctz.append(int(categoria.subtotal))
+                    total_value = 0 
+                    total_value_ctz.append(int(categoria.subtotal))
 
-                # TODO: ORDENAR
-                # RECORRE LISTA DE VALORES DE SUBTOTALES PARA LA COTIZACIÓN
-                for sub in total_value_ctz:
-                    total_value += sub
-                value.controls[0].content.controls[3].controls[0].content.controls[1].value = total_value
-                value.controls[0].content.controls[3].controls[0].content.controls[1].update()
+                    # TODO: ORDENAR
+                    # RECORRE LISTA DE VALORES DE SUBTOTALES PARA LA COTIZACIÓN
+                    for sub in total_value_ctz:
+                        total_value += sub
+                    value.controls[0].content.controls[3].controls[0].content.controls[1].value = total_value
+                    value.controls[0].content.controls[3].controls[0].content.controls[1].update()
 
-                # TODO: BORRAR DETALLE POR CONSOLA
-                for i in categories_list:
-                    print(i.subtotal)
+                    # TODO: BORRAR DETALLE POR CONSOLA
+                    for i in categories_list:
+                        print(i.subtotal)
 
-                for i in range(0, 5):
-                    data.cells.append(
-                        DataCell(
-                            FormHelper(value.controls[0].content.controls[2].controls[i].content.controls[1].value)
+                    for i in range(0, 5):
+                        data.cells.append(
+                            DataCell(
+                                FormHelper(str(value.controls[0].content.controls[2].controls[i].content.controls[1].value).upper())
+                            )
                         )
-                    )
-                    if value.controls[0].content.controls[2].controls[i].content.controls[1].value == 'GL':
-                        pass
-                    else:
-                        value.controls[0].content.controls[2].controls[i].content.controls[1].value = ''
-                        value.controls[0].content.controls[2].controls[i].content.controls[1].update()
+                        if value.controls[0].content.controls[2].controls[i].content.controls[1].value == 'GL':
+                            pass
+                        else:
+                            value.controls[0].content.controls[2].controls[i].content.controls[1].value = ''
+                            value.controls[0].content.controls[2].controls[i].content.controls[1].update()
+                except TypeError as e:
+                    print(e)
 
         if key == "AppDataTable":
             if len(data.cells) == 0:
@@ -368,16 +392,21 @@ def get_client_data(e):
     else:
         print("CLIENTE NO INGRESADO")
 
+# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def fill_clients(e):
     db = Database.ConnectToDatabase()
+    records = Database.ReadDatabaseClients(db)
     for key, value in control_map.items():
         if key == 'AppRegisterForm':
-            code = value.controls[0].content.controls[5].controls[0].controls[1].content.controls[0].value
-            if code == 'Código':
-                value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].options.clear()
-                for code in Database.ReadDatabaseClients(db)[::-1]:
-                    value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].options.append(dropdown.Option(code[0]))
-                value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].update()
+            if len(records) == 0:
+                print("THE DATABASE IS EMPTY")
+            else:
+                code = value.controls[0].content.controls[5].controls[0].controls[1].content.controls[0].value
+                if code == 'Código':
+                    value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].options.clear()
+                    for code in Database.ReadDatabaseClients(db)[::-1]:
+                        value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].options.append(dropdown.Option(code[0]))
+                    value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].update()
 
 
 # Buttons

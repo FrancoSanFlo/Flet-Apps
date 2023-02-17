@@ -2,6 +2,7 @@ from openpyxl import *
 from openpyxl.drawing.image import Image
 from database import *
 from form_helper import return_new_client_code, return_new_quote, return_existence
+ 
 
 # wb = load_workbook('C:\\Users\\franc\\Desktop\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
 # ws = wb.active
@@ -56,4 +57,11 @@ quote = return_new_quote()
 #     print(repetido[0])
 
 booleano = return_existence('2300230K')
-print(booleano)
+# print(booleano)
+
+db = Database.ConnectToDatabase()
+records = Database.ReadDatabase(db)
+# print(len(records))
+
+# num = "1"
+# print(num.upper())
