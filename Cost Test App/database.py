@@ -57,7 +57,6 @@ class Database:
 
     def UpdateDatabase(db, value):
         c = db.cursor()
-        # c.execute(f"UPDATE cotizaciones SET {dato}=? WHERE N_cotizacion=?", value)
         c.execute("""UPDATE cotizaciones SET Solicitud=?, Descripcion=?, Estado=?, 
         Ganada=?, Entregada=?, Facturada=?, Pagado=?, Folio=?, Fecha_factura=?, Factoring=? WHERE N_cotizacion=?""", value)
         db.commit()
@@ -95,10 +94,15 @@ class Database:
         c.execute("""SELECT Codigo_cliente, Rut, Cliente, Fono, Direccion FROM clientes""")
         records = c.fetchall()
         return records
+    
+    def UpdateClientsDatabase(db, value):
+        c = db.cursor()
+        c.execute("""UPDATE clientes SET Rut=?, Cliente=?, Fono=?, Direccion=? WHERE Codigo_cliente=?""", value)
+        db.commit()
+        print("ejecutado(clientes)")
 
     def SearchByCode(db, value):
         c = db.cursor()
-        # make sure to name the columns and not SELECT * FROM...
         c.execute("""SELECT Codigo_cliente, Rut, Cliente, Fono, Direccion FROM clientes WHERE Codigo_cliente=?""", value)
         records = c.fetchone()
         return records  

@@ -217,7 +217,7 @@ class AppRegisterForm(UserControl):
                                 alignment=MainAxisAlignment.START,
                                 controls=[
                                     return_clients_button(),
-                                    self.app_form_dropdown_field_client_code("Código", 0)
+                                    self.app_form_dropdown_field_client_code("Código cliente", 0)
                                     # ButtonNavigation(page, 'quote', 'Editar cotización', icons.ARROW_FORWARD_ROUNDED, False, True),
                                 ],
                             ),

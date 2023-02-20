@@ -126,7 +126,7 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     ws_format['I28'] = neto
     ws_format['I59'] = neto
 
-    img = Image('images/peric.png')
+    img = Image('assets/images/peric.png')
     ws_format.add_image(img, 'A1')
 
     # FOR DESKTOP - FORMAT SAVE
@@ -167,9 +167,9 @@ def update_into_excel(n_cotizacion):
     wb.close()
 
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION          
-def update_input_data(e):
+def update_input_data(control_map_key):
     for key, value in control_map.items():
-        if key == 'AppFormQuote':
+        if key == 'AppFormQuote' and control_map_key == 'AppFormQuote':
             n_cotizacion = value.controls[0].content.controls[0].controls[0].content.controls[1].value
 
             solicitud = value.controls[0].content.controls[0].controls[3].content.controls[1].value
@@ -189,7 +189,6 @@ def update_input_data(e):
             # VALIDATION
             if n_cotizacion == '' or solicitud == '' or folio == '' or factoring == '' or fecha_factura == '' or descripcion == '':
                 print('SOME FIELD IS EMPTY') 
-                pass
             else:
                 db = Database.ConnectToDatabase()
                 Database.UpdateDatabase(
@@ -197,12 +196,28 @@ def update_input_data(e):
                 )
                 db.close()
                 update_into_excel(n_cotizacion)
+        if key == 'AppEditClientForm' and control_map_key == 'AppEditClientForm':
+            codigo_cliente = value.controls[0].content.controls[0].controls[0].content.controls[1].value
+
+            rut = value.controls[0].content.controls[0].controls[1].content.controls[1].value
+            cliente = value.controls[0].content.controls[0].controls[2].content.controls[1].value
+            fono = value.controls[0].content.controls[0].controls[3].content.controls[1].value
+            direccion = value.controls[0].content.controls[0].controls[4].content.controls[1].value
+
+            #VALIDATION
+            if codigo_cliente == '' or rut == '' or cliente == '' or fono == '' or direccion == '':
+                print('SOME FIELD IS EMPTY') 
+            else:
+                db = Database.ConnectToDatabase()
+                Database.UpdateClientsDatabase(
+                    db, (rut, cliente, fono, direccion, codigo_cliente)
+                )
+                db.close()
 
 def clean_data_fields():
     for key, value in control_map.items():
         if key == 'AppRegisterForm':
             for user_input in value.controls[0].content.controls[0].controls[:]:
-                # data_cotizacion.append(user_input.content.controls[1].value)
                 if user_input.content.controls[0].value == 'Número Cotización':
                     user_input.content.controls[1].value = return_new_quote()
                     user_input.content.controls[1].update()
@@ -393,28 +408,51 @@ def get_client_data(e):
         print("CLIENTE NO INGRESADO")
 
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION          
-def fill_clients(e):
+def filling_clients(control_map_key):
     db = Database.ConnectToDatabase()
     records = Database.ReadDatabaseClients(db)
     for key, value in control_map.items():
-        if key == 'AppRegisterForm':
+        if key == 'AppRegisterForm' and control_map_key == 'AppRegisterForm':
             if len(records) == 0:
                 print("THE DATABASE IS EMPTY")
             else:
                 code = value.controls[0].content.controls[5].controls[0].controls[1].content.controls[0].value
-                if code == 'Código':
+                if code == 'Código cliente':
                     value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].options.clear()
                     for code in Database.ReadDatabaseClients(db)[::-1]:
                         value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].options.append(dropdown.Option(code[0]))
                     value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].update()
+        if key == 'AppEditClientForm' and control_map_key == 'AppEditClientForm':
+            if len(records) == 0:
+                print("THE DATABASE IS EMPTY")
+            else:
+                code = value.controls[0].content.controls[0].controls[0].content.controls[0].value
+                if code == 'Código cliente':
+                    value.controls[0].content.controls[0].controls[0].content.controls[1].options.clear()
+                    for code in Database.ReadDatabaseClients(db)[::-1]:
+                        value.controls[0].content.controls[0].controls[0].content.controls[1].options.append(dropdown.Option(code[0]))
+                    value.controls[0].content.controls[0].controls[0].content.controls[1].update()
 
+
+# REUSABLE DB FUNCTIONS
+def fill_register_clients(e):
+    filling_clients('AppRegisterForm')
+
+def fill_edit_clients(e):
+    filling_clients('AppEditClientForm')
+
+def update_quote_input_data(e):
+    update_input_data('AppFormQuote')
+
+def update_client_input_data(e):
+    update_input_data('AppEditClientForm')
 
 # Buttons
 def return_form_button():
     return Container(
         alignment=alignment.center,
         content=ElevatedButton(
-            on_click=lambda e: update_input_data(e),
+            on_click=lambda e: update_quote_input_data(e),
             bgcolor='#007C91',
             color="white",
             content=Row(
@@ -584,7 +622,7 @@ def return_clients_button():
     return Container(
         alignment=alignment.center,
         content=ElevatedButton(
-            on_click=lambda e: fill_clients(e),
+            on_click=lambda e: fill_register_clients(e),
             bgcolor='#007C91',
             color="white",
             content=Row(
@@ -596,6 +634,74 @@ def return_clients_button():
                     ),
                     Text(
                         "Cargar clientes",
+                        size=12,
+                        weight="bold",
+                    ),
+                ],
+            ),
+            style=ButtonStyle(
+                shape={
+                    "": RoundedRectangleBorder(radius=6),
+                },
+                color={
+                    "": "white",
+                },
+            ),
+            height=42,
+            width=170,
+        ),
+    )
+
+def return_edit_clients_button():
+    return Container(
+        alignment=alignment.center,
+        content=ElevatedButton(
+            on_click=lambda e: fill_edit_clients(e),
+            bgcolor='#007C91',
+            color="white",
+            content=Row(
+                alignment=MainAxisAlignment.CENTER,
+                controls=[
+                    Icon(
+                        name=icons.REFRESH_ROUNDED,
+                        size=16
+                    ),
+                    Text(
+                        "Cargar clientes",
+                        size=12,
+                        weight="bold",
+                    ),
+                ],
+            ),
+            style=ButtonStyle(
+                shape={
+                    "": RoundedRectangleBorder(radius=6),
+                },
+                color={
+                    "": "white",
+                },
+            ),
+            height=42,
+            width=170,
+        ),
+    )
+
+def return_edit_form_button():
+    return Container(
+        alignment=alignment.center,
+        content=ElevatedButton(
+            on_click=lambda e: update_client_input_data(e),
+            bgcolor='#007C91',
+            color="white",
+            content=Row(
+                alignment=MainAxisAlignment.CENTER,
+                controls=[
+                    Icon(
+                        name=icons.ADD_ROUNDED,
+                        size=16
+                    ),
+                    Text(
+                        "Enviar cambios",
                         size=12,
                         weight="bold",
                     ),

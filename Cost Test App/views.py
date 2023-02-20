@@ -10,6 +10,7 @@ from form_quote import AppFormQuote
 from form_register import AppRegisterForm
 from data_table import AppDataTable
 from form_client import AppClientForm
+from form_edit_client import AppEditClientForm
 
 
 
@@ -49,6 +50,16 @@ def views_handler(page):
                 AppHeader(page),
                 Divider(height=2, color="transparent"),
                 AppClientForm()
+            ],
+        ),
+        '/edit-client': View(
+            route='/edit-client',
+            bgcolor="#FDFDFD",
+            padding = 10,
+            controls=[
+                AppHeader(page),
+                Divider(height=2, color="transparent"),
+                AppEditClientForm()
             ],
         )
     }
