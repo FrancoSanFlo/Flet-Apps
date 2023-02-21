@@ -70,7 +70,6 @@ class AppFormQuote(UserControl):
                         ),
                         TextField(
                             border_color="transparent",
-                            # on_change= lambda e: self.on_change_input(e),
                             height=20,
                             disabled=txt_state,
                             text_size=13,

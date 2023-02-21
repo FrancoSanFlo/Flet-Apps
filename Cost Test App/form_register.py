@@ -218,16 +218,13 @@ class AppRegisterForm(UserControl):
                                 controls=[
                                     return_clients_button(),
                                     self.app_form_dropdown_field_client_code("Código cliente", 0)
-                                    # ButtonNavigation(page, 'quote', 'Editar cotización', icons.ARROW_FORWARD_ROUNDED, False, True),
                                 ],
                             ),
                             Row(
                                 alignment=MainAxisAlignment.END,
                                 controls=[
-                                    # ButtonNavigation(page, 'register', 'Registrar categoría', icons.CATEGORY_ROUNDED, False, True),
                                     return_register_form_button(),
                                     return_category_register_button(),
-                                    # ButtonNavigation(page, 'register', 'Registrar categoría', icons.PERSON_ROUNDED, False, True),
                                 ],
                             ),
                         ],

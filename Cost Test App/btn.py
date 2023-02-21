@@ -61,9 +61,10 @@ def return_cotizacion(data_quote):
 def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud, descripcion, neto):
 
     # FOR DESKTOP - COT
-    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+
     # FOR NOTEBOOK - COT
-    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
     
     ws = wb.active
     max_row = int(ws.max_row) + 1
@@ -93,14 +94,18 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     min_column = ws.min_column
 
     # FOR DESKTOP - COT SAVE
-    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+
     # # FOR NOTEBOOK - COT SAVE
-    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
     """PARA GUARDAR EL FORMATO DE COTIZACIÓN"""
     # FOR DESKTOP - FORMAT
-    wb_format = load_workbook('C:\\Users\\franc\\Desktop\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
+    # wb_format = load_workbook('C:\\Users\\franc\\Desktop\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
+
+    # FOR NOTEBOOK - FORMAT
+    wb_format = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True) 
     ws_format = wb_format.active
 
     counter = 1
@@ -130,15 +135,19 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     ws_format.add_image(img, 'A1')
 
     # FOR DESKTOP - FORMAT SAVE
-    wb_format.save(f'C:\\Users\\franc\\Desktop\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+    # wb_format.save(f'C:\\Users\\franc\\Desktop\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+
+    # FOR NOTEBOOK - FORMAT SAVE
+    wb_format.save(f'C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+
     wb_format.close()
 
 def update_into_excel(n_cotizacion):
     # FOR DESKTOP
-    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK
-    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
 
     ws = wb.active
     dato_row_update = 0
@@ -160,10 +169,10 @@ def update_into_excel(n_cotizacion):
         print("EXCEL ACTUALIZADO")
 
     # FOR DESKTOP
-    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
     
-    # # FOR NOTEBOOK
-    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # FOR NOTEBOOK
+    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION          
@@ -248,7 +257,8 @@ def clean_data_fields():
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION         
 def get_input_data(e):
     data_cotizacion = []
-    
+    category_exist = False
+
     for key, value in control_map.items():
         if key == 'AppRegisterForm':
             for user_input in value.controls[0].content.controls[0].controls[:]:
@@ -260,45 +270,51 @@ def get_input_data(e):
             user_description = value.controls[0].content.controls[1].controls[0].content.controls[1].value
             data_cotizacion.append(str(user_description).upper())
 
+            for user_input in value.controls[0].content.controls[2].controls[:]:
+                if user_input.content.controls[1].value != '' and user_input.content.controls[0].value != 'Tipo Unidad' :
+                    category_exist = True
             
-    # VALIDATION FOR REGISTER QUOTE
-    if len(data_cotizacion) != 6:
-        print("FALTAN DATOS")
+    if category_exist:
+        print("EXISTE CATEGORIA, INGRESAR")
     else:
-        if len(categories_list) < 1:
-            print("NO HAY CATEGORIAS INGRESADAS")
+        # VALIDATION FOR REGISTER QUOTE
+        if len(data_cotizacion) != 6:
+            print("FALTAN DATOS")
         else:
-            ctz = return_cotizacion(data_cotizacion)
+            if len(categories_list) < 1:
+                print("NO HAY CATEGORIAS INGRESADAS")
+            else:
+                ctz = return_cotizacion(data_cotizacion)
 
-            # Calling to the DB Class
-            db = Database.ConnectToDatabase()
-            Database.InsertDatabase(
-                db, 
-                (
-                    ctz.n_cotizacion, 
-                    ctz.cliente, 
-                    ctz.rut, 
-                    ctz.solicitado_por,
-                    ctz.descripcion,
-                    ctz.fecha_solicitud,
-                    int(ctz.neto),
-                    int(ctz.iva),
-                    ctz.estado,
-                    ctz.ganada,
-                    ctz.entregado,
-                    ctz.facturado,
-                    ctz.pagado,
-                    ctz.folio,
-                    ctz.fecha_factura,
-                    ctz.factoring
+                # Calling to the DB Class
+                db = Database.ConnectToDatabase()
+                Database.InsertDatabase(
+                    db, 
+                    (
+                        ctz.n_cotizacion, 
+                        ctz.cliente, 
+                        ctz.rut, 
+                        ctz.solicitado_por,
+                        ctz.descripcion,
+                        ctz.fecha_solicitud,
+                        int(ctz.neto),
+                        int(ctz.iva),
+                        ctz.estado,
+                        ctz.ganada,
+                        ctz.entregado,
+                        ctz.facturado,
+                        ctz.pagado,
+                        ctz.folio,
+                        ctz.fecha_factura,
+                        ctz.factoring
+                    )
                 )
-            )
-            db.close()
+                db.close()
 
-            save_into_excel(ctz.n_cotizacion, ctz.rut, ctz.cliente, ctz.solicitado_por, ctz.fecha_solicitud, ctz.descripcion, ctz.neto)
-            clean_data_fields()
-            categories_list.clear()
-            total_value_ctz.clear()
+                save_into_excel(ctz.n_cotizacion, ctz.rut, ctz.cliente, ctz.solicitado_por, ctz.fecha_solicitud, ctz.descripcion, ctz.neto)
+                clean_data_fields()
+                categories_list.clear()
+                total_value_ctz.clear()
 
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def fill_quotes(e):

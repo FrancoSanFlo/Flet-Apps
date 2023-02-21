@@ -1,0 +1,2 @@
+En btn.py revisar las funciones save_into_excel, update_into_excel,
+actualizar cada vz que se ocupe o en el pc de escritorio o en el notebook
