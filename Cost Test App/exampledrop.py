@@ -38,5 +38,26 @@ from openpyxl.drawing.image import Image
 # wb.save(f'C:\\Users\\franc\\Desktop\\Cotizacion_{cotizacion}.xlsx')
 # wb.close()
 
+from validations import rut_validation
 rut = '123456789'
-print(rut[-1])
+rut2 = '12345678'
+rut3 = '12345678-9'
+rut4 = '1234567-8'
+
+def return_rut(rut):
+    if '-' in rut:
+        if len(rut) == 9:
+            return '{0}.{1}.{2}'.format(rut[:1], rut[1:4], rut[4:])
+        else:
+            return '{0}.{1}.{2}'.format(rut[:2], rut[2:5], rut[5:])
+    else:
+        return '{0}.{1}.{2}-{3}'.format(rut[:2], rut[2:5], rut[5:8], rut[-1])
+
+# print(return_rut(rut))
+# print(return_rut(rut1))
+# print(return_rut(rut2))
+
+print(rut_validation(rut))
+print(rut_validation(rut2))
+print(rut_validation(rut4))
+print(rut_validation(rut3))

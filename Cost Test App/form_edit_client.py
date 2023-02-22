@@ -8,6 +8,7 @@ from controls import add_to_control_reference, return_control_reference
 # app_modules
 from form_quote import AppFormQuote
 from form_register import AppRegisterForm
+from form_client import AppClientForm
 from form_helper import return_new_client_code
 from btn import return_edit_form_button, return_edit_clients_button
 from database import *
@@ -28,7 +29,10 @@ class AppEditClientForm(UserControl):
                 record = Database.SearchByCode(db , [value.controls[0].content.controls[0].controls[0].content.controls[1].value])
                 record = list(record)
 
-                value.controls[0].content.controls[0].controls[1].content.controls[1].value = record[1]
+                rut = str(record[1])
+                rut = rut.replace('.', '')
+                rut = rut.replace('-', '')
+                value.controls[0].content.controls[0].controls[1].content.controls[1].value = rut
                 value.controls[0].content.controls[0].controls[1].content.controls[1].update()
                 value.controls[0].content.controls[0].controls[2].content.controls[1].value = record[2]
                 value.controls[0].content.controls[0].controls[2].content.controls[1].update()
@@ -85,7 +89,7 @@ class AppEditClientForm(UserControl):
                         Row(
                           controls=[
                             self.app_form_dropdown_field_client_code("Código cliente", 1),
-                            AppFormQuote.app_form_input_field(self, "Rut", 1, False, None),
+                            AppClientForm.app_rut_input_field(self, "Rut", 1, False, None),
                             AppFormQuote.app_form_input_field(self, "Cliente", 2, False, None),
                             AppFormQuote.app_form_input_field(self, "Teléfono", 1, False, None),
                             AppFormQuote.app_form_input_field(self, "Dirección", 2, False, None),

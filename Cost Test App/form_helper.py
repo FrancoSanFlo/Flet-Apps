@@ -1,5 +1,4 @@
 # Form helper for desktop application
-
 # modules
 from datetime import datetime
 from openpyxl import *

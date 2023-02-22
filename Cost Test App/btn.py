@@ -7,6 +7,7 @@ from database import Database
 from openpyxl import *
 from openpyxl.drawing.image import Image
 from form_helper import return_date, return_new_quote, Cotizacion, Categoria, FormHelper, Cliente, return_new_client_code, return_existence
+from validations import rut_validation
 
 control_map = return_control_reference()
 categories_list = []
@@ -61,10 +62,10 @@ def return_cotizacion(data_quote):
 def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud, descripcion, neto):
 
     # FOR DESKTOP - COT
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK - COT
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
     
     ws = wb.active
     max_row = int(ws.max_row) + 1
@@ -94,18 +95,19 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     min_column = ws.min_column
 
     # FOR DESKTOP - COT SAVE
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
 
     # # FOR NOTEBOOK - COT SAVE
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
     """PARA GUARDAR EL FORMATO DE COTIZACIÓN"""
     # FOR DESKTOP - FORMAT
-    # wb_format = load_workbook('C:\\Users\\franc\\Desktop\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
+    wb_format = load_workbook('C:\\Users\\franc\\Desktop\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
 
     # FOR NOTEBOOK - FORMAT
-    wb_format = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True) 
+    # wb_format = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True) 
+
     ws_format = wb_format.active
 
     counter = 1
@@ -135,19 +137,19 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     ws_format.add_image(img, 'A1')
 
     # FOR DESKTOP - FORMAT SAVE
-    # wb_format.save(f'C:\\Users\\franc\\Desktop\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+    wb_format.save(f'C:\\Users\\franc\\Desktop\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
 
     # FOR NOTEBOOK - FORMAT SAVE
-    wb_format.save(f'C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+    # wb_format.save(f'C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
 
     wb_format.close()
 
 def update_into_excel(n_cotizacion):
     # FOR DESKTOP
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
 
     ws = wb.active
     dato_row_update = 0
@@ -169,10 +171,10 @@ def update_into_excel(n_cotizacion):
         print("EXCEL ACTUALIZADO")
 
     # FOR DESKTOP
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
     
     # FOR NOTEBOOK
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION          
@@ -217,11 +219,18 @@ def update_input_data(control_map_key):
             if codigo_cliente == '' or rut == '' or cliente == '' or fono == '' or direccion == '':
                 print('SOME FIELD IS EMPTY') 
             else:
-                db = Database.ConnectToDatabase()
-                Database.UpdateClientsDatabase(
-                    db, (rut, cliente, fono, direccion, codigo_cliente)
-                )
-                db.close()
+                rut_boolean, validated_rut = rut_validation(rut)
+                if rut_boolean:
+                    if return_existence(validated_rut):
+                        print("RUT EXISTENTE")
+                    else:
+                        db = Database.ConnectToDatabase()
+                        Database.UpdateClientsDatabase(
+                            db, (validated_rut, cliente, fono, direccion, codigo_cliente)
+                        )
+                        db.close()
+                else:
+                    print("FORMATO DE RUT INVÁLIDO")
 
 def clean_data_fields():
     for key, value in control_map.items():
@@ -403,23 +412,27 @@ def get_client_data(e):
                     client_data.append(user_input.content.controls[1].value)
     
     if len(client_data) == 5:
-        client = Cliente(client_data[0], client_data[1], client_data[2], client_data[3], client_data[4])
-        if return_existence(client.rut):
-            print("RUT EXISTENTE")
+        rut_boolean, validated_rut = rut_validation(client_data[1])
+        if rut_boolean:
+            client = Cliente(client_data[0], validated_rut,  client_data[2], client_data[3], client_data[4])
+            if return_existence(client.rut):
+                print("RUT EXISTENTE")
+            else:
+                db = Database.ConnectToDatabase()
+                Database.InsertDatabaseClientes(db, (client.codigo_cliente, client.rut, client.cliente, client.fono, client.direccion))
+                client_data.clear()
+                # NOTE: CLEAN DATA CLIENT FIELDS
+                for key, value in control_map.items():
+                    if key == 'AppClientForm':
+                        for user_input in value.controls[0].content.controls[0].controls[:]:
+                            if user_input.content.controls[0].value == 'Código cliente':
+                                user_input.content.controls[1].value = return_new_client_code()
+                                user_input.content.controls[1].update()
+                            else:
+                                user_input.content.controls[1].value = ''
+                                user_input.content.controls[1].update()
         else:
-            db = Database.ConnectToDatabase()
-            Database.InsertDatabaseClientes(db, (client.codigo_cliente, client.rut, client.cliente, client.fono, client.direccion))
-            client_data.clear()
-            # NOTE: CLEAN DATA CLIENT FIELDS
-            for key, value in control_map.items():
-                if key == 'AppClientForm':
-                    for user_input in value.controls[0].content.controls[0].controls[:]:
-                        if user_input.content.controls[0].value == 'Código cliente':
-                            user_input.content.controls[1].value = return_new_client_code()
-                            user_input.content.controls[1].update()
-                        else:
-                            user_input.content.controls[1].value = ''
-                            user_input.content.controls[1].update()
+            print("FORMATO DE RUT INVÁLIDO")
     else:
         print("CLIENTE NO INGRESADO")
 
