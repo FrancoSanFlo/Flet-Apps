@@ -16,5 +16,7 @@ def rut_validation(rut):
 def phone_validation(phone):
     if len(phone) < 8:
         return False, phone
-    
+    # if len(phone) == 9:
+    #     return True, phone[1:]
+
     return True, f'9{phone}'

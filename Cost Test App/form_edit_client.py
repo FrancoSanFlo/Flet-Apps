@@ -32,11 +32,13 @@ class AppEditClientForm(UserControl):
                 rut = str(record[1])
                 rut = rut.replace('.', '')
                 rut = rut.replace('-', '')
+                phone = str(record[3])
+                
                 value.controls[0].content.controls[0].controls[1].content.controls[1].value = rut
                 value.controls[0].content.controls[0].controls[1].content.controls[1].update()
                 value.controls[0].content.controls[0].controls[2].content.controls[1].value = record[2]
                 value.controls[0].content.controls[0].controls[2].content.controls[1].update()
-                value.controls[0].content.controls[0].controls[3].content.controls[1].value = record[3]
+                value.controls[0].content.controls[0].controls[3].content.controls[1].value = phone[1:]
                 value.controls[0].content.controls[0].controls[3].content.controls[1].update()
                 value.controls[0].content.controls[0].controls[4].content.controls[1].value = record[4]
                 value.controls[0].content.controls[0].controls[4].content.controls[1].update()
@@ -91,7 +93,7 @@ class AppEditClientForm(UserControl):
                             self.app_form_dropdown_field_client_code("Código cliente", 1),
                             AppClientForm.app_rut_input_field(self, "Rut", 1, False, None),
                             AppFormQuote.app_form_input_field(self, "Cliente", 2, False, None),
-                            AppFormQuote.app_form_input_field(self, "Teléfono", 1, False, None),
+                            AppClientForm.app_phone_input_field(self, "Teléfono", 1, False, None),
                             AppFormQuote.app_form_input_field(self, "Dirección", 2, False, None),
                           ]  
                         ),
