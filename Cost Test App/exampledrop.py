@@ -1,64 +1,57 @@
-from openpyxl import *
-from openpyxl.drawing.image import Image
+import flet 
+from flet import *
 
-# wb = load_workbook('C:\\Users\\franc\\Desktop\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
-# wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
-# ws = wb.active
+class AlertDialog_(UserControl):
+    def __init__(self, value:str, icon_name):
+        self.value = value
+        self.icon_name = icon_name
+        super().__init__()
 
-# print(len(ws.cell(row=28, column=7).value))
+    def OpenAlert(e, value, icon_name):
+        return AlertDialog(
+                title_padding=0,
+                content_padding=0,
+                actions_padding=0,
+                content=Container(
+                    width=350,
+                    height=50,
+                    border_radius=20,
+                    bgcolor="transparent",
+                    content=Row(
+                        vertical_alignment=CrossAxisAlignment.CENTER,
+                        alignment=MainAxisAlignment.SPACE_EVENLY,
+                        controls=[
+                            Icon(
+                                name=icon_name,
+                                size=20,
+                                color="#42AB49",
+                            ),
+                            Text(
+                                value=value,
+                                size=20,
+                                weight='bold',
+                                italic=True,
+                                color="white"
+                            ),
+                        ]
+                    )
+                )
+            )
+    
+    def Show(self, e):
+        open_alert = self.OpenAlert(self.value, self.icon_name)
+        self.page.dialog = open_alert
+        open_alert.open = True
+        self.page.update()
+    
+    def build(self):
+        return ElevatedButton("Open dialog", on_click=self.Show)
+        
 
-# for row in ws.iter_rows(min_row=18, max_col=9, max_row=ws.max_row):
-#     for cell in row:
-#         if cell.value == "TOTAL NETO (CLP)":
-#             print("ENCONTRADO NETO", cell.row, cell.column)
-#         if cell.value == "PRECIO UNITARIO NETO DE LA PARTIDA CON GASTOS GENERALES Y UTILIDADES (CLP)":
-#             print("ENCONTRADO EL VALOR TOTAL", cell.row, cell.column)
+def main(page: Page):
 
-# ws['A18'] = 'HOLA'
-# ws['B18'] = "HOLA"
-# ws['F18'] = "HOLA"
-# ws['G18'] = "HOLA"
-# ws['H18'] = "HOLA"
-# ws['I18'] = "HOLA"
-# ws.cell(row=18, column=1).value = 'DESDE COORDENADA'
+    page.add(
+    AlertDialog_("Ingresado satisfactoriamente", icons.CHECK_CIRCLE_OUTLINE_ROUNDED)
+)
 
-# ws['A19'] = 'HOLANDA'
-# ws['B19'] = "HOLANDA"
-# ws['F19'] = "HOLANDA"
-# ws['G19'] = "HOLANDA"
-# ws['H19'] = "HOLANDA"
-# ws['I19'] = "HOLANDA"
-
-# cotizacion = 1234
-
-# img = Image('images/peric.png')
-# ws.add_image(img, 'A1')
-
-# wb.save('C:\\Users\\franc\\Desktop\\FORMATO CTZ PERICLTDA EDITADO.xlsx')
-# wb.save(f'C:\\Users\\franc\\Desktop\\Cotizacion_{cotizacion}.xlsx')
-# wb.close()
-
-from validations import rut_validation, phone_validation
-rut = '123456789'
-rut2 = '12345678'
-rut3 = '12345678-9'
-rut4 = '1234567-8'
-
-def return_rut(rut):
-    if '-' in rut:
-        if len(rut) == 9:
-            return '{0}.{1}.{2}'.format(rut[:1], rut[1:4], rut[4:])
-        else:
-            return '{0}.{1}.{2}'.format(rut[:2], rut[2:5], rut[5:])
-    else:
-        return '{0}.{1}.{2}-{3}'.format(rut[:2], rut[2:5], rut[5:8], rut[-1])
-
-# print(return_rut(rut))
-# print(return_rut(rut1))
-# print(return_rut(rut2))
-
-# print(rut_validation(rut))
-# print(rut_validation(rut2))
-# print(rut_validation(rut4))
-# print(rut_validation(rut3))
-print(phone_validation('987654321'))
+app(target=main)

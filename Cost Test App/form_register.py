@@ -3,13 +3,14 @@
 # modules
 import flet 
 from flet import *
-from btn import return_form_button, return_category_register_button, return_register_form_button, return_clients_button
+from btn import return_category_register_button, return_clients_button
 from controls import add_to_control_reference, return_control_reference
 from database import *
 
 # app-modules
 from form_helper import return_date, return_new_quote, ButtonNavigation
 from form_quote import AppFormQuote
+from btn import get_input_data
 
 control_map = return_control_reference()
 
@@ -130,6 +131,83 @@ class AppRegisterForm(UserControl):
             ),
         )
 
+    def return_register_form_button(self):
+        return Container(
+            alignment=alignment.center,
+            content=ElevatedButton(
+                on_click=self.get_data,
+                bgcolor='#007C91',
+                color="white",
+                content=Row(
+                    alignment=MainAxisAlignment.CENTER,
+                    controls=[
+                        Icon(
+                            name=icons.CHECK_CIRCLE_ROUNDED,
+                            size=16
+                        ),
+                        Text(
+                            "Registar cotización",
+                            size=12,
+                            weight="bold",
+                        ),
+                    ],
+                ),
+                style=ButtonStyle(
+                    shape={
+                        "": RoundedRectangleBorder(radius=6),
+                    },
+                    color={
+                        "": "white",
+                    },
+                ),
+                height=42,
+                width=170,
+            ),
+        )
+
+    def OpenAlert(e, value, icon_name, color):
+        return AlertDialog(
+                title_padding=0,
+                content_padding=0,
+                actions_padding=0,
+                content=Container(
+                    expand=True,
+                    height=45,
+                    border_radius=20,
+                    bgcolor="white",
+                    content=Row(
+                        vertical_alignment=CrossAxisAlignment.CENTER,
+                        alignment=MainAxisAlignment.SPACE_EVENLY,
+                        controls=[
+                            Icon(
+                                name=icon_name,
+                                size=24,
+                                color=color,
+                            ),
+                            Text(
+                                value=value,
+                                size=20,
+                                weight='bold',
+                                italic=True,
+                                color="#383838"
+                            ),
+                        ]
+                    )
+                )
+            )
+
+    def get_data(self, e):
+        boolean_value, value, icon_name = get_input_data()
+        if boolean_value:
+            open_alert = self.OpenAlert(value, icon_name, "#42AB49")
+            self.page.dialog = open_alert
+            open_alert.open = True
+            self.page.update()
+        else:
+            open_alert = self.OpenAlert(value, icon_name, "#FF6961")
+            self.page.dialog = open_alert
+            open_alert.open = True
+            self.page.update()
 
     # Operations
     def on_change_input(self, e):
@@ -223,7 +301,7 @@ class AppRegisterForm(UserControl):
                             Row(
                                 alignment=MainAxisAlignment.END,
                                 controls=[
-                                    return_register_form_button(),
+                                    self.return_register_form_button(),
                                     return_category_register_button(),
                                 ],
                             ),

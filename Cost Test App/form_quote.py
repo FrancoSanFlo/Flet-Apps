@@ -3,7 +3,7 @@
 # modules
 import flet 
 from flet import *
-from btn import return_form_button, return_quotes_button
+from btn import return_quotes_button, update_quote_input_data
 from controls import add_to_control_reference, return_control_reference
 
 # app-modules
@@ -186,6 +186,39 @@ class AppFormQuote(UserControl):
             ),
         )
 
+    def return_form_button(self):
+        return Container(
+            alignment=alignment.center,
+            content=ElevatedButton(
+                on_click=self.update_data,
+                bgcolor='#007C91',
+                color="white",
+                content=Row(
+                    alignment=MainAxisAlignment.CENTER,
+                    controls=[
+                        Icon(
+                            name=icons.ADD_ROUNDED,
+                            size=16
+                        ),
+                        Text(
+                            "Enviar cambios",
+                            size=12,
+                            weight="bold",
+                        ),
+                    ],
+                ),
+                style=ButtonStyle(
+                    shape={
+                        "": RoundedRectangleBorder(radius=6),
+                    },
+                    color={
+                        "": "white",
+                    },
+                ),
+                height=42,
+                width=170,
+            ),
+        )
    
     # Function that returns the price with IVA at the moment a change is made in the textfield
     def on_change_input(self, e):
@@ -276,6 +309,50 @@ class AppFormQuote(UserControl):
                 value.controls[0].content.controls[4].controls[1].content.controls[1].value = record[7]
                 value.controls[0].content.controls[4].controls[1].content.controls[1].update()
 
+    def OpenAlert(e, value, icon_name, color):
+        return AlertDialog(
+                title_padding=0,
+                content_padding=0,
+                actions_padding=0,
+                content=Container(
+                    expand=True,
+                    height=45,
+                    border_radius=20,
+                    bgcolor="white",
+                    content=Row(
+                        vertical_alignment=CrossAxisAlignment.CENTER,
+                        alignment=MainAxisAlignment.SPACE_EVENLY,
+                        controls=[
+                            Icon(
+                                name=icon_name,
+                                size=24,
+                                color=color,
+                            ),
+                            Text(
+                                value=value,
+                                size=20,
+                                weight='bold',
+                                italic=True,
+                                color="#383838"
+                            ),
+                        ]
+                    )
+                )
+            )
+
+    def update_data(self, e):
+        boolean_value, value, icon_name = update_quote_input_data()
+        if boolean_value:
+            open_alert = self.OpenAlert(value, icon_name, "#42AB49")
+            self.page.dialog = open_alert
+            open_alert.open = True
+            self.page.update()
+        else:
+            open_alert = self.OpenAlert(value, icon_name, "#FF6961")
+            self.page.dialog = open_alert
+            open_alert.open = True
+            self.page.update()
+
     def build(self):
         self.app_form_input_instance()
 
@@ -291,7 +368,6 @@ class AppFormQuote(UserControl):
                 controls=[
                     Row(
                         controls=[
-                            # self.app_form_input_field("Número Cotización", 1, True, return_new_quote()),
                             self.app_form_dropdown_field_quote("Número Cotización", 1),
                             self.app_form_input_field("Rut", 1, False, None),
                             self.app_form_input_field("Cliente", 2, False, None),
@@ -341,7 +417,7 @@ class AppFormQuote(UserControl):
                                 controls=[
                                 # We need to add a button here, but it's created in a separate file...
                                     return_quotes_button(),
-                                    return_form_button(),
+                                    self.return_form_button(),
                                 ],
                             ),
                         ],

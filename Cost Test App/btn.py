@@ -62,10 +62,10 @@ def return_cotizacion(data_quote):
 def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud, descripcion, neto):
 
     # FOR DESKTOP - COT
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK - COT
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
     
     ws = wb.active
     max_row = int(ws.max_row) + 1
@@ -95,18 +95,18 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     min_column = ws.min_column
 
     # FOR DESKTOP - COT SAVE
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
 
     # # FOR NOTEBOOK - COT SAVE
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
     """PARA GUARDAR EL FORMATO DE COTIZACIÓN"""
     # FOR DESKTOP - FORMAT
-    # wb_format = load_workbook('C:\\Users\\franc\\Desktop\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
+    wb_format = load_workbook('C:\\Users\\franc\\Desktop\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
 
     # FOR NOTEBOOK - FORMAT
-    wb_format = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True) 
+    # wb_format = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True) 
 
     ws_format = wb_format.active
 
@@ -137,19 +137,19 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     ws_format.add_image(img, 'A1')
 
     # FOR DESKTOP - FORMAT SAVE
-    # wb_format.save(f'C:\\Users\\franc\\Desktop\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+    wb_format.save(f'C:\\Users\\franc\\Desktop\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
 
     # FOR NOTEBOOK - FORMAT SAVE
-    wb_format.save(f'C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+    # wb_format.save(f'C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
 
     wb_format.close()
 
 def update_into_excel(n_cotizacion):
     # FOR DESKTOP
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
 
     ws = wb.active
     dato_row_update = 0
@@ -171,13 +171,13 @@ def update_into_excel(n_cotizacion):
         print("EXCEL ACTUALIZADO")
 
     # FOR DESKTOP
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
     
     # FOR NOTEBOOK
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
-# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
+# TODO: SEND MESSAGE TO SCREEN, VALIDATION APPFROMQUOTE      
 def update_input_data(control_map_key):
     for key, value in control_map.items():
         if key == 'AppFormQuote' and control_map_key == 'AppFormQuote':
@@ -199,7 +199,7 @@ def update_input_data(control_map_key):
 
             # VALIDATION
             if n_cotizacion == '' or solicitud == '' or folio == '' or factoring == '' or fecha_factura == '' or descripcion == '':
-                print('SOME FIELD IS EMPTY') 
+                return False, "Faltan datos", icons.ERROR_ROUNDED
             else:
                 db = Database.ConnectToDatabase()
                 Database.UpdateDatabase(
@@ -207,6 +207,8 @@ def update_input_data(control_map_key):
                 )
                 db.close()
                 update_into_excel(n_cotizacion)
+                return True, "Actualizado satisfactoriamente", icons.CHECK_CIRCLE_OUTLINE_ROUNDED
+                
         if key == 'AppEditClientForm' and control_map_key == 'AppEditClientForm':
             codigo_cliente = value.controls[0].content.controls[0].controls[0].content.controls[1].value
 
@@ -217,24 +219,25 @@ def update_input_data(control_map_key):
 
             #VALIDATION
             if codigo_cliente == '' or rut == '' or cliente == '' or fono == '' or direccion == '':
-                print('SOME FIELD IS EMPTY') 
+                return False, "Campos vacíos", icons.ERROR_ROUNDED
             else:
                 rut_boolean, validated_rut = rut_validation(rut)
                 phone_boolean, validated_phone = phone_validation(fono)
                 if rut_boolean:
                     if phone_boolean:
                         if return_existence(validated_rut):
-                            print("RUT EXISTENTE")
+                            return False, "RUT Existente", icons.ERROR_ROUNDED
                         else:
                             db = Database.ConnectToDatabase()
                             Database.UpdateClientsDatabase(
                                 db, (validated_rut, cliente, validated_phone, direccion, codigo_cliente)
                             )
                             db.close()
+                            return True, "Actualizado satisfactoriamente", icons.CHECK_CIRCLE_OUTLINE_ROUNDED
                     else:
-                        print("FORMATO DE FONO INCORRECTO")
+                        return False, "Teléfono incorrecto", icons.ERROR_ROUNDED 
                 else:
-                    print("FORMATO DE RUT INVÁLIDO")
+                    return False, "Formato de RUT incorrecto", icons.ERROR_ROUNDED
 
 def clean_data_fields():
     for key, value in control_map.items():
@@ -267,39 +270,38 @@ def clean_data_fields():
             value.controls[0].controls[0].rows.clear()
             value.controls[0].controls[0].update()
 
-# TODO: SEND MESSAGE TO SCREEN, VALIDATION         
-def get_input_data(e):
+def get_input_data():
     data_cotizacion = []
     category_exist = False
 
     for key, value in control_map.items():
         if key == 'AppRegisterForm':
             for user_input in value.controls[0].content.controls[0].controls[:]:
-                if user_input.content.controls[1].value == '':
+
+                if user_input.content.controls[1].value == '' or user_input.content.controls[1].value == 'DRAGO PERIC':
                     pass
                 else:
                     data_cotizacion.append(str(user_input.content.controls[1].value).upper())
 
             user_description = value.controls[0].content.controls[1].controls[0].content.controls[1].value
-            data_cotizacion.append(str(user_description).upper())
+            if user_description != '':
+                data_cotizacion.append(str(user_description).upper())
 
             for user_input in value.controls[0].content.controls[2].controls[:]:
                 if user_input.content.controls[1].value != '' and user_input.content.controls[0].value != 'Tipo Unidad' :
                     category_exist = True
             
     if category_exist:
-        print("EXISTE CATEGORIA, INGRESAR")
+        return False, "Categoría sin ingresar", icons.ERROR_ROUNDED
     else:
-        # VALIDATION FOR REGISTER QUOTE
-        if len(data_cotizacion) != 6:
-            print("FALTAN DATOS")
+        if len(data_cotizacion) < 6:
+            return False, "Faltan datos", icons.ERROR_ROUNDED
         else:
             if len(categories_list) < 1:
-                print("NO HAY CATEGORIAS INGRESADAS")
+                return False, "No hay categorías ingresadas", icons.ERROR_ROUNDED
             else:
                 ctz = return_cotizacion(data_cotizacion)
 
-                # Calling to the DB Class
                 db = Database.ConnectToDatabase()
                 Database.InsertDatabase(
                     db, 
@@ -328,6 +330,7 @@ def get_input_data(e):
                 clean_data_fields()
                 categories_list.clear()
                 total_value_ctz.clear()
+                return True, "Cotización registrada", icons.CHECK_CIRCLE_OUTLINE_ROUNDED
 
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def fill_quotes(e):
@@ -347,7 +350,6 @@ def fill_quotes(e):
                 
                 value.controls[0].content.controls[6].controls[1].controls[1].content.visible = False
 
-# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def register_category(e):
     for key, value in control_map.items():
         if key == 'AppRegisterForm':
@@ -360,7 +362,6 @@ def register_category(e):
             subtotal_value = value.controls[0].content.controls[2].controls[4].content.controls[1].value
 
             #TODO: ARREGLAR TOTAL
-            # total_value = 0
             if name_category_value == '' or type_unit_value == '' or amount_value == '' or unit_value == '' or subtotal_value == '':
                 print('SOME FIELD IS EMPTY')
             else:
@@ -377,10 +378,6 @@ def register_category(e):
                         total_value += sub
                     value.controls[0].content.controls[3].controls[0].content.controls[1].value = total_value
                     value.controls[0].content.controls[3].controls[0].content.controls[1].update()
-
-                    # TODO: BORRAR DETALLE POR CONSOLA
-                    for i in categories_list:
-                        print(i.subtotal)
 
                     for i in range(0, 5):
                         data.cells.append(
@@ -403,9 +400,7 @@ def register_category(e):
                 value.controls[0].controls[0].rows.append(data)
                 value.controls[0].controls[0].update()
 
-
-# TODO: SEND MESSAGE TO SCREEN, VALIDATION          
-def get_client_data(e):
+def get_client_data():
     client_data = []
     for key, value in control_map.items():
         if key == 'AppClientForm':
@@ -423,7 +418,7 @@ def get_client_data(e):
             if phone_boolean:
                 client = Cliente(client_data[0], validated_rut,  client_data[2], validated_phone, client_data[4])
                 if return_existence(client.rut):
-                    print("RUT EXISTENTE")
+                    return False, "RUT Existente", icons.ERROR_ROUNDED
                 else:
                     db = Database.ConnectToDatabase()
                     Database.InsertDatabaseClientes(db, (client.codigo_cliente, client.rut, client.cliente, client.fono, client.direccion))
@@ -438,12 +433,13 @@ def get_client_data(e):
                                 else:
                                     user_input.content.controls[1].value = ''
                                     user_input.content.controls[1].update()
+                    return True, "Ingresado satisfactoriamente", icons.CHECK_CIRCLE_OUTLINE_ROUNDED
             else:
-                print("TELÉFONO INVALIDO")
+                return False, "Teléfono incorrecto", icons.ERROR_ROUNDED 
         else:
-            print("FORMATO DE RUT INVÁLIDO")
+            return False, "Formato de rut incorrecto", icons.ERROR_ROUNDED
     else:
-        print("CLIENTE NO INGRESADO")
+        return False, "Cliente no ingresado", icons.ERROR_ROUNDED
 
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION          
 def filling_clients(control_map_key):
@@ -479,47 +475,15 @@ def fill_register_clients(e):
 def fill_edit_clients(e):
     filling_clients('AppEditClientForm')
 
-def update_quote_input_data(e):
-    update_input_data('AppFormQuote')
+def update_quote_input_data():
+    boolean_value, value, icon_name = update_input_data('AppFormQuote')
+    return boolean_value, value, icon_name
 
-def update_client_input_data(e):
-    update_input_data('AppEditClientForm')
+def update_client_input_data():
+    boolean_value, value, icon_name = update_input_data('AppEditClientForm')
+    return boolean_value, value, icon_name
 
 # Buttons
-def return_form_button():
-    return Container(
-        alignment=alignment.center,
-        content=ElevatedButton(
-            on_click=lambda e: update_quote_input_data(e),
-            bgcolor='#007C91',
-            color="white",
-            content=Row(
-                alignment=MainAxisAlignment.CENTER,
-                controls=[
-                    Icon(
-                        name=icons.ADD_ROUNDED,
-                        size=16
-                    ),
-                    Text(
-                        "Enviar cambios",
-                        size=12,
-                        weight="bold",
-                    ),
-                ],
-            ),
-            style=ButtonStyle(
-                shape={
-                    "": RoundedRectangleBorder(radius=6),
-                },
-                color={
-                    "": "white",
-                },
-            ),
-            height=42,
-            width=170,
-        ),
-    )
-
 def return_quotes_button():
     return Container(
         alignment=alignment.center,
@@ -588,74 +552,6 @@ def return_category_register_button():
         ),
     )
 
-def return_register_form_button():
-    return Container(
-        alignment=alignment.center,
-        content=ElevatedButton(
-            on_click=lambda e: get_input_data(e),
-            bgcolor='#007C91',
-            color="white",
-            content=Row(
-                alignment=MainAxisAlignment.CENTER,
-                controls=[
-                    Icon(
-                        name=icons.CHECK_CIRCLE_ROUNDED,
-                        size=16
-                    ),
-                    Text(
-                        "Registar cotización",
-                        size=12,
-                        weight="bold",
-                    ),
-                ],
-            ),
-            style=ButtonStyle(
-                shape={
-                    "": RoundedRectangleBorder(radius=6),
-                },
-                color={
-                    "": "white",
-                },
-            ),
-            height=42,
-            width=170,
-        ),
-    )
-
-def return_client_form_button():
-    return Container(
-        alignment=alignment.center,
-        content=ElevatedButton(
-            on_click=lambda e: get_client_data(e),
-            bgcolor='#007C91',
-            color="white",
-            content=Row(
-                alignment=MainAxisAlignment.CENTER,
-                controls=[
-                    Icon(
-                        name=icons.PERSON_ADD_ROUNDED,
-                        size=16
-                    ),
-                    Text(
-                        "Ingresar cliente",
-                        size=12,
-                        weight="bold",
-                    ),
-                ],
-            ),
-            style=ButtonStyle(
-                shape={
-                    "": RoundedRectangleBorder(radius=6),
-                },
-                color={
-                    "": "white",
-                },
-            ),
-            height=42,
-            width=170,
-        ),
-    )
-
 def return_clients_button():
     return Container(
         alignment=alignment.center,
@@ -706,40 +602,6 @@ def return_edit_clients_button():
                     ),
                     Text(
                         "Cargar clientes",
-                        size=12,
-                        weight="bold",
-                    ),
-                ],
-            ),
-            style=ButtonStyle(
-                shape={
-                    "": RoundedRectangleBorder(radius=6),
-                },
-                color={
-                    "": "white",
-                },
-            ),
-            height=42,
-            width=170,
-        ),
-    )
-
-def return_edit_form_button():
-    return Container(
-        alignment=alignment.center,
-        content=ElevatedButton(
-            on_click=lambda e: update_client_input_data(e),
-            bgcolor='#007C91',
-            color="white",
-            content=Row(
-                alignment=MainAxisAlignment.CENTER,
-                controls=[
-                    Icon(
-                        name=icons.ADD_ROUNDED,
-                        size=16
-                    ),
-                    Text(
-                        "Enviar cambios",
                         size=12,
                         weight="bold",
                     ),
