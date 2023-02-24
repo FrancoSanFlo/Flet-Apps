@@ -1,57 +1,105 @@
-import flet 
-from flet import *
+# import flet as ft
 
-class AlertDialog_(UserControl):
-    def __init__(self, value:str, icon_name):
-        self.value = value
-        self.icon_name = icon_name
-        super().__init__()
+# def main(page: ft.Page):
+#     def pick_files_result(e: ft.FilePickerResultEvent):
+#         selected_files.value = (
+#             ",".join(map(lambda f: f.name, e.files)) if e.files else "Cancelled!"
+#             # e.files[0].path if e.files else "Cancelled!"
+#         )
+#         selected_files.update()
 
-    def OpenAlert(e, value, icon_name):
-        return AlertDialog(
-                title_padding=0,
-                content_padding=0,
-                actions_padding=0,
-                content=Container(
-                    width=350,
-                    height=50,
-                    border_radius=20,
-                    bgcolor="transparent",
-                    content=Row(
-                        vertical_alignment=CrossAxisAlignment.CENTER,
-                        alignment=MainAxisAlignment.SPACE_EVENLY,
-                        controls=[
-                            Icon(
-                                name=icon_name,
-                                size=20,
-                                color="#42AB49",
-                            ),
-                            Text(
-                                value=value,
-                                size=20,
-                                weight='bold',
-                                italic=True,
-                                color="white"
-                            ),
-                        ]
-                    )
-                )
-            )
-    
-    def Show(self, e):
-        open_alert = self.OpenAlert(self.value, self.icon_name)
-        self.page.dialog = open_alert
-        open_alert.open = True
-        self.page.update()
-    
-    def build(self):
-        return ElevatedButton("Open dialog", on_click=self.Show)
-        
+#     pick_files_dialog = ft.FilePicker(on_result=pick_files_result)
+#     selected_files = ft.Text()
 
-def main(page: Page):
+#     page.overlay.append(pick_files_dialog)
 
-    page.add(
-    AlertDialog_("Ingresado satisfactoriamente", icons.CHECK_CIRCLE_OUTLINE_ROUNDED)
+#     page.add(
+#         ft.Row(
+#             [
+#                 ft.ElevatedButton(
+#                     "Pick files",
+#                     icon=ft.icons.UPLOAD_FILE,
+#                     on_click=lambda _: pick_files_dialog.pick_files(
+#                         allow_multiple=True
+#                     ),
+#                 ),
+#                 selected_files,
+#             ]
+#         )
+#     )
+
+# ft.app(target=main)
+from typing import Dict
+
+import flet
+from flet import (
+    Column,
+    ElevatedButton,
+    FilePicker,
+    FilePickerResultEvent,
+    FilePickerUploadEvent,
+    FilePickerUploadFile,
+    Page,
+    ProgressRing,
+    Ref,
+    Row,
+    Text,
+    icons,
 )
 
-app(target=main)
+
+def main(page: Page):
+    prog_bars: Dict[str, ProgressRing] = {}
+    files = Ref[Column]()
+    upload_button = Ref[ElevatedButton]()
+
+    def file_picker_result(e: FilePickerResultEvent):
+        upload_button.current.disabled = True if e.files is None else False
+        prog_bars.clear()
+        files.current.controls.clear()
+        if e.files is not None:
+            for f in e.files:
+                prog = ProgressRing(value=0, bgcolor="#eeeeee", width=20, height=20)
+                prog_bars[f.name] = prog
+                files.current.controls.append(Row([prog, Text(f.name)]))
+        page.update()
+
+    def on_upload_progress(e: FilePickerUploadEvent):
+        prog_bars[e.file_name].value = e.progress
+        prog_bars[e.file_name].update()
+
+    file_picker = FilePicker(on_result=file_picker_result, on_upload=on_upload_progress)
+
+    def upload_files(e):
+        uf = []
+        if file_picker.result is not None and file_picker.result.files is not None:
+            for f in file_picker.result.files:
+                uf.append(
+                    FilePickerUploadFile(
+                        f.name,
+                        upload_url=page.get_upload_url(f.name, 600),
+                    )
+                )
+            file_picker.upload(uf)
+
+    # hide dialog in a overlay
+    page.overlay.append(file_picker)
+
+    page.add(
+        ElevatedButton(
+            "Select files...",
+            icon=icons.FOLDER_OPEN,
+            on_click=lambda _: file_picker.pick_files(allow_multiple=True),
+        ),
+        Column(ref=files),
+        ElevatedButton(
+            "Upload",
+            ref=upload_button,
+            icon=icons.UPLOAD,
+            on_click=upload_files,
+            disabled=True,
+        ),
+    )
+
+
+flet.app(target=main, upload_dir="uploads")

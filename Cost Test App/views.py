@@ -11,6 +11,7 @@ from form_register import AppRegisterForm
 from data_table import AppDataTable
 from form_client import AppClientForm
 from form_edit_client import AppEditClientForm
+from form_settings import AppSettingsForm
 
 
 
@@ -26,7 +27,6 @@ def views_handler(page):
                 AppRegisterForm(),
                 Column(
                     scroll='hidden',
-                    expand=True,
                     controls=[
                         AppDataTable()
                     ],
@@ -61,5 +61,18 @@ def views_handler(page):
                 Divider(height=2, color="transparent"),
                 AppEditClientForm()
             ],
-        )
+        ),
+        '/app-settings': View(
+            route='/app-settings',
+            bgcolor="#FDFDFD",
+            padding = 10,
+            controls=[
+                AppHeader(page),
+                Divider(height=2, color="transparent"),
+                Container(
+                    alignment=Alignment(0, 0),
+                    content=AppSettingsForm(),
+                ),
+            ],
+        ),
     }
