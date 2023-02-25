@@ -10,6 +10,7 @@ from form_helper import return_date, return_new_quote, Cotizacion, Categoria, Fo
 from validations import rut_validation, phone_validation
 
 control_map = return_control_reference()
+control_url_map = return_url_control_reference()
 categories_list = []
 total_value_ctz = []
 
@@ -60,12 +61,15 @@ def return_cotizacion(data_quote):
     return cotizacion
 
 def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud, descripcion, neto):
+    url_cot_file = control_url_map["url_cot_file"]
+    url_lay_file = control_url_map["url_lay_file"]
+    url_cot_company_file = control_url_map["url_cot_company_file"]
 
     # FOR DESKTOP - COT
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook(url_cot_file, data_only=True)
 
     # FOR NOTEBOOK - COT
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
     
     ws = wb.active
     max_row = int(ws.max_row) + 1
@@ -95,18 +99,18 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     min_column = ws.min_column
 
     # FOR DESKTOP - COT SAVE
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.save(url_cot_file)
 
     # # FOR NOTEBOOK - COT SAVE
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
     """PARA GUARDAR EL FORMATO DE COTIZACIÓN"""
     # FOR DESKTOP - FORMAT
-    # wb_format = load_workbook('C:\\Users\\franc\\Desktop\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True)
+    wb_format = load_workbook(url_lay_file , data_only=True)
 
     # FOR NOTEBOOK - FORMAT
-    wb_format = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True) 
+    # wb_format = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\FORMATO CTZ PERICLTDA.xlsx', data_only=True) 
 
     ws_format = wb_format.active
 
@@ -137,19 +141,19 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     ws_format.add_image(img, 'A1')
 
     # FOR DESKTOP - FORMAT SAVE
-    # wb_format.save(f'C:\\Users\\franc\\Desktop\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+    wb_format.save(f'{url_cot_company_file}COTIZACION_{n_cotizacion}.xlsx')
 
     # FOR NOTEBOOK - FORMAT SAVE
-    wb_format.save(f'C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
+    # wb_format.save(f'C:\\Users\\franc\\OneDrive\\Escritorio\\COTIZACIONES\\INGRESADAS\\COTIZACION_{n_cotizacion}.xlsx')
 
     wb_format.close()
 
 def update_into_excel(n_cotizacion):
     # FOR DESKTOP
-    # wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
+    wb = load_workbook('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx', data_only=True)
 
     # FOR NOTEBOOK
-    wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
+    # wb = load_workbook('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx', data_only=True)
 
     ws = wb.active
     dato_row_update = 0
@@ -171,10 +175,10 @@ def update_into_excel(n_cotizacion):
         print("EXCEL ACTUALIZADO")
 
     # FOR DESKTOP
-    # wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
+    wb.save('C:\\Users\\franc\\Desktop\\ejemplo_cot.xlsx')
     
     # FOR NOTEBOOK
-    wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
+    # wb.save('C:\\Users\\franc\\OneDrive\\Escritorio\\ejemplo_cot.xlsx')
     wb.close()
 
 # TODO: SEND MESSAGE TO SCREEN, VALIDATION APPFROMQUOTE      
@@ -479,12 +483,13 @@ def add_url_data():
                 if URL_cot_file == '' or URL_lay_file == '' or URL_cot_company_file == '':
                     pass
                 else:
+                    URL_cot_file = URL_cot_file.replace("""\\""", """\\\\""")
+                    URL_cot_company_file = URL_cot_company_file.replace("""\\""", """\\\\""")
+                    URL_lay_file = URL_lay_file.replace("""\\""", """\\\\""")
                     add_url_control_reference("url_cot_file", URL_cot_file)
                     add_url_control_reference("url_lay_file", URL_lay_file)
                     add_url_control_reference("url_cot_company_file", URL_cot_company_file)
-                    control_url = return_url_control_reference()
-                    for key, value in control_url.items():
-                        print(key, value)
+                    # print(control_url_map["url_cot_file"])
 
 # REUSABLE DB FUNCTIONS
 def fill_register_clients(e):
