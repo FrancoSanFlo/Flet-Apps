@@ -31,8 +31,7 @@ class AppHeader(UserControl):
     def app_header_avatar(self):
         return Container(
             content=IconButton(
-                icons.SETTINGS_ROUNDED,
-                on_click=lambda _: self.page.go('/app-settings'),
+                icons.PERSON_ROUNDED,
             )
         )
     

@@ -110,13 +110,15 @@ class AppFormQuote(UserControl):
                         text_size=10,
                         content_padding=0,
                         text_style=TextStyle(weight="bold"),
-                        color='black',
+                        color=colors.WHITE,
                         alignment=Alignment(0, 0),
                         options=[
                             dropdown.Option("ENVIADA"),
                             dropdown.Option("NO ENVIADA"),
                         ],
-                        focused_border_color="#007C91"
+                        focused_border_color="#007C91",
+                        bgcolor=colors.BLACK38,
+                        filled=True
                     ),
                 ],
             ),
@@ -143,10 +145,12 @@ class AppFormQuote(UserControl):
                         text_size=10,
                         content_padding=0,
                         text_style=TextStyle(weight="bold"),
-                        color='black',
+                        color=colors.WHITE,
                         alignment=Alignment(0, 0),
                         on_change=lambda e: self.dropdown_quote_changed(e),
                         focused_border_color="#007C91",
+                        bgcolor=colors.BLACK38,
+                        filled=True
                     ),
                     
                 ],
@@ -173,14 +177,16 @@ class AppFormQuote(UserControl):
                         height=20,
                         text_size=10,
                         content_padding=0,
-                        color='black',
+                        color=colors.WHITE,
                         text_style=TextStyle(weight="bold"),
                         alignment=Alignment(0, 0),
                         options=[
                             dropdown.Option("SI"),
                             dropdown.Option("NO"),
                         ],
-                        focused_border_color="#007C91"
+                        focused_border_color="#007C91",
+                        bgcolor=colors.BLACK38,
+                        filled=True,
                     ),
                 ],
             ),

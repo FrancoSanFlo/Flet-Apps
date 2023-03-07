@@ -103,7 +103,7 @@ class AppRegisterForm(UserControl):
         return Container(
             expand=expand,
             height=45,
-            width=150,
+            width=180,
             bgcolor='#EBEBEB',
             border_radius=6,
             padding=8,
@@ -121,10 +121,12 @@ class AppRegisterForm(UserControl):
                         text_size=10,
                         content_padding=0,
                         text_style=TextStyle(weight="bold"),
-                        color='black',
+                        color=colors.WHITE,
                         alignment=Alignment(0, 0),
                         on_change=lambda e: self.dropdown_client_changed(e),
                         focused_border_color="#007C91",
+                        filled=True,
+                        bgcolor=colors.BLACK38
                     ),
                     
                 ],
