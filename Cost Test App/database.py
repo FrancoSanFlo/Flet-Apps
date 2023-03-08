@@ -106,3 +106,9 @@ class Database:
         c.execute("""SELECT Codigo_cliente, Rut, Cliente, Fono, Direccion FROM clientes WHERE Codigo_cliente=?""", value)
         records = c.fetchone()
         return records  
+    
+    def SearchByRut(db, value):
+        c = db.cursor()
+        c.execute("""SELECT Codigo_cliente, Rut, Cliente, Fono, Direccion FROM clientes WHERE Rut=?""", value)
+        records = c.fetchone()
+        return records  

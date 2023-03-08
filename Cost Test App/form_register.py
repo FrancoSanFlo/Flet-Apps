@@ -238,7 +238,8 @@ class AppRegisterForm(UserControl):
         db = Database.ConnectToDatabase()
         for key, value in control_map.items():
             if key == 'AppRegisterForm':
-                record = Database.SearchByCode(db , [value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].value])
+                client_code = str(value.controls[0].content.controls[5].controls[0].controls[1].content.controls[1].value)
+                record = Database.SearchByCode(db , [client_code[0:3]])
                 record = list(record)
 
                 value.controls[0].content.controls[0].controls[1].content.controls[1].value = record[1]

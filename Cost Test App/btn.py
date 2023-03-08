@@ -76,6 +76,7 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     record = list(record)
     record.pop(0)
 
+    #TODO: VERIFICAR FUNCIONALIDAD DE CODIGO
     for i in range(len(record)):
         if i == 8:
             if record[i] == 1:
@@ -123,7 +124,11 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
         in_row += 1
         counter += 1
 
+    record = Database.SearchByRut(db, [rut])
+    fono = str(record[3])
+    db.close()
 
+    # CAMBIOS HECHOS AQUI 08/03/2023
     ws_format['B7'] = f'COTIZACIÓN N° {n_cotizacion}'
     ws_format['B16'] = descripcion
     ws_format['C9'] = cliente
@@ -132,6 +137,8 @@ def save_into_excel(n_cotizacion, rut, cliente, solicitado_por, fecha_solicitud,
     ws_format['H11'] = fecha_solicitud
     ws_format['I28'] = neto
     ws_format['I59'] = neto
+    ws_format['H10'] = f'{fono[0]} {fono[1:]}'
+    ws_format['C10'] = str(record[4])
 
     img = Image('assets/images/peric.png')
     ws_format.add_image(img, 'A1')
